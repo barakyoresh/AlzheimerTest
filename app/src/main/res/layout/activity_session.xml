@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2015. Barak Yoresh. all rights reserved.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
+
+
+    <RelativeLayout
+        android:id="@+id/leftLayout"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="60dp"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:text="Left"
+            android:id="@+id/leftStimulus"
+            android:layout_gravity="center_vertical"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rightLayout"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="60dp"
+            android:textColor="@android:color/white"
+            android:text="Right"
+            android:id="@+id/rightStimulus"
+            android:layout_gravity="center_vertical"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
+    </RelativeLayout>
+
+</LinearLayout>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">AlzTest</string>
+    <string name="action_search">Search</string>
+    <string name="title_option_detail">Option Detail</string>
+    <string name="subject_name">Subject Name</string>
+    <string name="subject_id">Subject ID</string>
+    <string name="start_session">Begin Session</string>
+    <string name="search_title_stimuli">Stimulus, Category or Value</string>
+    <string name="search_title_statistics">Date or Subject</string>
+    <string name="upload_stimuli">Upload stimuli from file</string>
+    <string name="clear_stimuli">Clear stimuli list</string>
+    <string name="action_add">Add new stimulus</string>
+    <string name="edit_stimulus">Edit stimulus</string>
+    <string name="legend_category">Category</string>
+    <string name="legend_name">Name</string>
+    <string name="legend_value">Value</string>
+    <string name="action_load_preferences">Load Saved Preferences</string>
+    <string name="action_save_preferences">Save Preferences</string>
+    <string name="numberOfStimuliTooltip">Number of stimuli pairs to display in trial:</string>
+    <string name="numberOfStimuliHeader">Number Of Stimuli</string>
+    <string name="maxValDiffTooltip">Maximum Value Difference (inclusive):</string>
+    <string name="minValDiffToolTip">Minimum Value Difference (inclusive):</string>
+    <string name="ValueDiffHeader">Value Difference</string>
+    <string name="categoryOptionsHeader">Category Options</string>
+    <string name="title_session">Session Activity</string>
+    <string name="save_statistics_to_file">Save Statistics to file</string>
+    <string name="clear_statistics">Clear Statistics</string>
+    <string name="legend_date">Date</string>
+    <string name="legend_ID">ID number</string>
+    <string name="title_statistics">Statistics</string>
+
+
+</resources>
