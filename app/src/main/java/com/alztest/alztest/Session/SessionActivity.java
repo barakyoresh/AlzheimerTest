@@ -20,12 +20,10 @@ import com.alztest.alztest.OptionListActivity;
 import com.alztest.alztest.Prefrences.AlzTestUserPrefs;
 import com.alztest.alztest.R;
 import com.alztest.alztest.Statistics.AlzTestSessionStatistics;
+import com.alztest.alztest.Statistics.StatisticsListFragment;
 import com.alztest.alztest.Stimuli.Stimulus;
 import com.alztest.alztest.Toolbox.AlzTestDatabaseManager;
 import com.alztest.alztest.Toolbox.AlzTestPreferencesManager;
-import com.j256.ormlite.stmt.PreparedQuery;
-import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -40,23 +38,31 @@ public class SessionActivity extends Activity {
     private Stimulus currentLeftStimulus, currentRightStimulus;
     private ArrayList<Pair<Stimulus, Stimulus>> sessionStimuliPairs;
     private AlzTestSessionStatistics sessionStatistics;
+    private AlzTestUserPrefs userPrefs;
     private long stimuliStartTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_session);
+
         leftStimulus = (TextView) findViewById(R.id.leftStimulus);
         rightStimulus = (TextView) findViewById(R.id.rightStimulus);
 
+        //hide keyboard
+        //InputMethodManager imm = (InputMethodManager) this.getSystemService(
+         //       Context.INPUT_METHOD_SERVICE);
+        //imm.toggleSoftInput(InputMethodManager.HIDE_NOT_ALWAYS, 0);
+
+
         //load last userPrefs
         AlzTestPreferencesManager prefsManager = new AlzTestPreferencesManager(this);
-        AlzTestUserPrefs userPrefs = prefsManager.getLastSavedPreferencesSet();
+        userPrefs = prefsManager.getLastSavedPreferencesSet();
 
         //load statistics DB
         AlzTestDatabaseManager.init(this);
 
-        /* ------- TEST ZONE ----- */
+        /* ------- TEST ZONE ----- *//*
         try {
             QueryBuilder<AlzTestSessionStatistics, Date> qb = AlzTestDatabaseManager.getInstance().getHelper().getAlzTestSessionStatisticsDao().queryBuilder();
             Where where = qb.where();
@@ -83,7 +89,7 @@ public class SessionActivity extends Activity {
 
         //init stats
         sessionStatistics = new AlzTestSessionStatistics(this.getIntent().getStringExtra(NewSessionFragment.SUBJECT_NAME),
-                                                         this.getIntent().getIntExtra(NewSessionFragment.SUBJECT_ID, 0));
+                                                         this.getIntent().getIntExtra(NewSessionFragment.SUBJECT_ID, -1));
 
         for (Pair<Stimulus, Stimulus> p : sessionStimuliPairs){
             Log.v(OptionListActivity.APPTAG, p.first.getName() + " : " + p.second.getName());
@@ -107,7 +113,7 @@ public class SessionActivity extends Activity {
         });
 
         invokeCountdown(userPrefs.getCountdownTimerValue(), this);
-    }
+   }
 
     private void invokeCountdown(int timeInSeconds, Activity activity) {
         //TODO: put stuff in finals. magic numbers!
@@ -145,7 +151,9 @@ public class SessionActivity extends Activity {
 
                 @Override
                 public void onFinish() {
-                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).callOnClick();
+                    if(dialog.isShowing()) {
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).callOnClick();
+                    }
                 }
             };
             timer.start();
@@ -180,6 +188,8 @@ public class SessionActivity extends Activity {
             e.printStackTrace();
             toast =  Toast.makeText(this, "Database error! information lost :(", Toast.LENGTH_SHORT);
         }
+
+        StatisticsListFragment.upDateListFromDB();
 
         toast.show();
         onBackPressed();

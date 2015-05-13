@@ -38,6 +38,7 @@ public class NewSessionFragment extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), SessionActivity.class);
 
+
                 //put extra data
                 String subjectName = nameView.getText().toString();
                 String subjectIdStr = idView.getText().toString();
