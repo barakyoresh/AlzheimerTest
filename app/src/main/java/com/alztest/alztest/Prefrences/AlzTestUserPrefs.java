@@ -22,8 +22,9 @@ public class AlzTestUserPrefs {
     private int minimumValueDifference = 0;
     private final ArrayList<String> opertaions = new ArrayList<String>();
     private final ArrayList<Integer> allValueDifferences = new ArrayList<Integer>();
+    private final ArrayList<Integer> AllSessCountdownTimes = new ArrayList<Integer>();
     private ArrayList<String> selectedCategories = new ArrayList<String>();
-    private int countdownTimerValue = 3;
+    private int countdownTimerValue = 0;
 
     public AlzTestUserPrefs(){
         opertaions.add("Use All Except:");
@@ -35,6 +36,10 @@ public class AlzTestUserPrefs {
         allValueDifferences.add(4);
         allValueDifferences.add(5);
         allValueDifferences.add(6);
+        AllSessCountdownTimes.add(5);
+        AllSessCountdownTimes.add(3);
+        AllSessCountdownTimes.add(1);
+        AllSessCountdownTimes.add(0);
     }
 
     public boolean isAllowRepetition() {
@@ -127,5 +132,13 @@ public class AlzTestUserPrefs {
 
     public void setCountdownTimerValue(int countdownTimerValue) {
         this.countdownTimerValue = countdownTimerValue;
+    }
+
+    public ArrayList<Integer> getAllSessCountdownTimes() {
+        return AllSessCountdownTimes;
+    }
+
+    public int getCountdownTimerValuePosition() {
+        return AllSessCountdownTimes.indexOf(countdownTimerValue);
     }
 }

@@ -69,7 +69,32 @@ public class AlzTestPrefrencesFragment extends Fragment {
         // number of stimuli widget
         setupNumOfStimWidget();
 
+        setupSessionCountdownWidget();
+
         // dummy widgets
+        setupDummyWidgets();
+    }
+
+    private void setupSessionCountdownWidget() {
+        final Spinner sessCountdown = (Spinner) rootView.findViewById(R.id.sessionCountdownSpinner);
+        final ArrayAdapter<Integer> adapter = new ArrayAdapter<Integer>(getActivity(), android.R.layout.simple_spinner_dropdown_item,
+                userPrefs.getAllSessCountdownTimes());
+        sessCountdown.setAdapter(adapter);
+        sessCountdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        userPrefs.setCountdownTimerValue(adapter.getItem(position));
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+                });
+        sessCountdown.setSelection(userPrefs.getCountdownTimerValuePosition());
+    }
+
+    private void setupDummyWidgets() {
         //seekbar
         SeekBar sb = (SeekBar) rootView.findViewById(R.id.seekBar);
         sb.setMax(256);

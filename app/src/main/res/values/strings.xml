@@ -30,6 +30,8 @@
     <string name="legend_date">Date</string>
     <string name="legend_ID">ID number</string>
     <string name="title_statistics">Statistics</string>
+    <string name="sessionCountdownHeader">Session Countdown</string>
+    <string name="sessionCountdownTooltip">Number of seconds before session stats</string>
 
 
 </resources>

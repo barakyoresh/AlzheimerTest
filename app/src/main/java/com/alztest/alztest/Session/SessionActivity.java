@@ -159,6 +159,8 @@ public class SessionActivity extends Activity {
             timer.start();
 
             dialog.show();
+        } else {
+            stimulusSwap();
         }
     }
 
