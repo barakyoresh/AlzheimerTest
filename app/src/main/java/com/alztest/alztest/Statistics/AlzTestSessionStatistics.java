@@ -100,4 +100,15 @@ public class AlzTestSessionStatistics {
         Log.v(OptionListActivity.APPTAG, "Added clickstat:\n" + clickStat);
         return;
     }
+
+    public ArrayList<AlzTestSingleClickStats> getCorrectStatistics() {
+        ArrayList<AlzTestSingleClickStats> correct = new ArrayList<AlzTestSingleClickStats>();
+
+        for(AlzTestSingleClickStats click : getStatistics()) {
+            if(click.correctResponse) {
+                correct.add(click);
+            }
+        }
+        return correct;
+    }
 }
