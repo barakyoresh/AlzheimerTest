@@ -85,10 +85,11 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="ormlite-android-4.48" level="project" />
     <orderEntry type="library" exported="" name="jxl" level="project" />
+    <orderEntry type="library" exported="" name="graphview-4.0.1" level="project" />
     <orderEntry type="library" exported="" name="ormlite-core-4.48" level="project" />
     <orderEntry type="library" exported="" name="gson-2.2.4" level="project" />
-    <orderEntry type="library" exported="" name="support-v4-19.0.0" level="project" />
-    <orderEntry type="library" exported="" name="FlurryAnalytics-5.5.0" level="project" />
+    <orderEntry type="library" exported="" name="support-annotations-21.0.3" level="project" />
+    <orderEntry type="library" exported="" name="support-v4-21.0.3" level="project" />
     <orderEntry type="library" exported="" name="ormlite-jdbc-4.48" level="project" />
   </component>
 </module>

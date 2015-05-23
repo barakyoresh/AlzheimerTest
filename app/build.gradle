@@ -28,5 +28,6 @@ dependencies {
     compile files('libs/ormlite/ormlite-android-4.48.jar')
     compile files('libs/ormlite/ormlite-core-4.48.jar')
     compile files('libs/ormlite/ormlite-jdbc-4.48.jar')
-    compile files('libs/Android 5.5.0/Flurry Analytics/FlurryAnalytics-5.5.0.jar')
+    //compile files('libs/GraphView/GraphView-4.0.1.jar')
+    compile 'com.jjoe64:graphview:4.0.1'
 }
