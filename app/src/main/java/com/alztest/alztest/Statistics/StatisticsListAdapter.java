@@ -183,7 +183,7 @@ public class StatisticsListAdapter extends BaseAdapter {
 
         date.setText(sdf.format(stats.get(position).getSessionStartTime()));
         name.setText(stats.get(position).getSubjectName());
-        id.setText(Integer.toString(stats.get(position).getSubjectId()));
+        id.setText(Long.toString(stats.get(position).getSubjectId()));
 
         return convertView;
     }
@@ -236,7 +236,11 @@ public class StatisticsListAdapter extends BaseAdapter {
     public class IDComparator implements Comparator<AlzTestSessionStatistics>{
         @Override
         public int compare(AlzTestSessionStatistics lhs, AlzTestSessionStatistics rhs) {
-            return lhs.getSubjectId() - rhs.getSubjectId();
+            Long result = lhs.getSubjectId() - rhs.getSubjectId();
+            if(result != 0) {
+                return result > 0 ? 1 : 0;
+            }
+            return 0;
         }
     }
 }

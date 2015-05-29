@@ -89,7 +89,7 @@ public class SessionActivity extends Activity {
 
         //init stats
         sessionStatistics = new AlzTestSessionStatistics(this.getIntent().getStringExtra(NewSessionFragment.SUBJECT_NAME),
-                                                         this.getIntent().getIntExtra(NewSessionFragment.SUBJECT_ID, -1));
+                                                         this.getIntent().getLongExtra(NewSessionFragment.SUBJECT_ID, -1));
 
         for (Pair<Stimulus, Stimulus> p : sessionStimuliPairs){
             Log.v(OptionListActivity.APPTAG, p.first.getName() + " : " + p.second.getName());

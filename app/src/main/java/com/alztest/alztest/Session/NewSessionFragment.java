@@ -42,9 +42,9 @@ public class NewSessionFragment extends Fragment {
                 //put extra data
                 String subjectName = nameView.getText().toString();
                 String subjectIdStr = idView.getText().toString();
-                int subjectId = 0;
+                long subjectId = 0;
                 try {
-                    subjectId = Integer.decode(subjectIdStr);
+                    subjectId = Long.decode(subjectIdStr);
                 } catch (Exception e) {
                     Log.e(OptionListActivity.APPTAG, "subject id decoding exception!");
                 }

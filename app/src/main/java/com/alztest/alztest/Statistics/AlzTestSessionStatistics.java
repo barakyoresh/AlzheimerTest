@@ -32,13 +32,13 @@ public class AlzTestSessionStatistics {
     @DatabaseField
     public String subjectName;
     @DatabaseField
-    public int subjectId;
+    public long subjectId;
     @DatabaseField(dataType = DataType.SERIALIZABLE)
     private ArrayList<String> statistics;
 
     public AlzTestSessionStatistics(){}
 
-    public AlzTestSessionStatistics(String subjectName, int subjectId) {
+    public AlzTestSessionStatistics(String subjectName, long subjectId) {
         this.sessionStartTime = new Date();
         statistics = new ArrayList<String>();
         this.subjectName = subjectName;
@@ -69,11 +69,11 @@ public class AlzTestSessionStatistics {
         this.subjectName = subjectName;
     }
 
-    public int getSubjectId() {
+    public long getSubjectId() {
         return subjectId;
     }
 
-    public void setSubjectId(int subjectId) {
+    public void setSubjectId(long subjectId) {
         this.subjectId = subjectId;
     }
 
