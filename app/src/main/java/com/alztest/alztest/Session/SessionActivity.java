@@ -57,7 +57,7 @@ public class SessionActivity extends Activity {
 
         //load last userPrefs
         AlzTestPreferencesManager prefsManager = new AlzTestPreferencesManager(this);
-        userPrefs = prefsManager.getLastSavedPreferencesSet();
+        userPrefs = prefsManager.getCachedPreferencesSet();
 
         //load statistics DB
         AlzTestDatabaseManager.init(this);

@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.alztest.alztest" >
+    package="com.alztest.alztest"
+    android:versionCode="2"
+    android:versionName="0.01">>
+
 
     <application
         android:allowBackup="true"

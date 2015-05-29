@@ -4,6 +4,7 @@
 
 package com.alztest.alztest.Prefrences;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.text.Editable;
@@ -24,13 +25,20 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.alztest.alztest.Dialogs.FileDialogCallback;
+import com.alztest.alztest.Dialogs.SaveDialog;
+import com.alztest.alztest.Dialogs.UploadDialog;
 import com.alztest.alztest.OptionListActivity;
-import com.alztest.alztest.Prefrences.Dialogs.OpenPreferencesDialog;
-import com.alztest.alztest.Prefrences.Dialogs.SavePreferencesDialog;
 import com.alztest.alztest.R;
 import com.alztest.alztest.Toolbox.AlzTestPreferencesManager;
+import com.alztest.alztest.Toolbox.SerializeManager;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 /**
@@ -49,7 +57,7 @@ public class AlzTestPrefrencesFragment extends Fragment {
 
         //load last userPrefs
         prefsManager = new AlzTestPreferencesManager(getActivity());
-        userPrefs = prefsManager.getLastSavedPreferencesSet();
+        userPrefs = prefsManager.getCachedPreferencesSet();
         upDateWidgetsWithPrefs(userPrefs);
 
 
@@ -183,14 +191,67 @@ public class AlzTestPrefrencesFragment extends Fragment {
 
     private void openSaveDialog() {
         prefsManager.setPreferenceSet(null, userPrefs);
-        SavePreferencesDialog spd = new SavePreferencesDialog();
-        spd.show(getFragmentManager(), getString(R.string.action_save_preferences));
+        SaveDialog sd = new SaveDialog();
+        sd.extensionType = "json";
+        sd.setCallback(new FileDialogCallback() {
+            @Override
+            public void onChooseFile(Activity activity, File file) {
+                boolean operationSuccessful = true;
+                try{
+                    PrintWriter writer = new PrintWriter(file.getAbsolutePath(), "UTF-8");
+                    writer.write(SerializeManager.serialize(userPrefs));
+                    writer.flush();
+                    writer.close();
+                }catch(Exception e){
+                    e.printStackTrace();
+                    operationSuccessful = false;
+                }
+
+                Log.v(OptionListActivity.APPTAG, operationSuccessful ? "success!" : "failed :(");
+                Toast toast = Toast.makeText(getActivity(), operationSuccessful ? "Saved Preferences file successfully" : "Saving Preferences file failed :(", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+        sd.show(getFragmentManager(), getString(R.string.action_save_preferences));
     }
 
     private void openOpenDialog() {
-        OpenPreferencesDialog opd = new OpenPreferencesDialog();
-        opd.setTargetFragment(this, 0);
-        opd.show(getFragmentManager(), getString(R.string.action_load_preferences));
+        UploadDialog ud = new UploadDialog();
+        ud.extensionType = "json";
+        ud.setCallback(new FileDialogCallback() {
+            @Override
+            public void onChooseFile(Activity activity, File file) {
+                boolean operationSuccesful = true;
+
+                try{
+                    BufferedReader reader = new BufferedReader(new FileReader(file));
+                    StringBuilder sb = new StringBuilder();
+                    String line = reader.readLine();
+
+                    while (line != null) {
+                        sb.append(line);
+                        line = reader.readLine();
+                    }
+
+                    userPrefs = (AlzTestUserPrefs) SerializeManager.deSerialize(sb.toString(), AlzTestUserPrefs.class);
+
+                }catch (Exception e) {
+                    e.printStackTrace();
+                    operationSuccesful = false;
+                }
+
+
+                if(operationSuccesful) {
+                    upDateWidgetsWithPrefs(userPrefs);
+                }
+
+                Log.v(OptionListActivity.APPTAG, operationSuccesful ? "success!" : "failed :(");
+                Toast toast = Toast.makeText(getActivity(), operationSuccesful ? "Loaded Preferences file successfully" : "Loading Preferences file failed :(", Toast.LENGTH_SHORT);
+                toast.show();
+
+            }
+        });
+        ud.show(getFragmentManager(), getString(R.string.action_load_preferences));
     }
 
     private void setupMinMaxValueDifferenceWidget() {
@@ -326,6 +387,6 @@ public class AlzTestPrefrencesFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        prefsManager.setPreferenceSet(null, userPrefs);
+        prefsManager.setCachedPreferencesSet(userPrefs);
     }
 }

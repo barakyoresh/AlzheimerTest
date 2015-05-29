@@ -2,7 +2,7 @@
  * Copyright (c) 2015. Barak Yoresh. all rights reserved.
  */
 
-package com.alztest.alztest.Stimuli.Dialogs;
+package com.alztest.alztest.Dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

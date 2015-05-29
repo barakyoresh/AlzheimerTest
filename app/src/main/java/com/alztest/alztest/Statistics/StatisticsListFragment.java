@@ -22,8 +22,8 @@ import android.widget.SearchView;
 
 import com.alztest.alztest.OptionListActivity;
 import com.alztest.alztest.R;
-import com.alztest.alztest.Stimuli.Dialogs.ClearDialog;
-import com.alztest.alztest.Stimuli.Dialogs.UploadDialog;
+import com.alztest.alztest.Dialogs.ClearDialog;
+import com.alztest.alztest.Dialogs.UploadDialog;
 import com.alztest.alztest.Toolbox.AlzTestSerializeManager;
 
 /**

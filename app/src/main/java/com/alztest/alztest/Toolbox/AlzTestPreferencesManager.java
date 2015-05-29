@@ -10,15 +10,11 @@ import android.content.SharedPreferences;
 
 import com.alztest.alztest.Prefrences.AlzTestUserPrefs;
 
-import java.util.ArrayList;
-
 /**
  * Created by Barak Yoresh on 13/02/2015.
  */
 public class AlzTestPreferencesManager {
     final private static String prefsKey = "ALZTEST_PREFS";
-    final private static String savedPreferencesNamesKey = "ALZTEST_PREFS_SAVED";
-    final private static String lastSavedKey = "ALZTEST_PREFS_LAST_SAVED";
     final private static String tempSetKey = "ALZTEST_PREFS_TEMP_SET";
     private SharedPreferences prefs = null;
     private SharedPreferences.Editor editor = null;
@@ -30,25 +26,18 @@ public class AlzTestPreferencesManager {
         editor = prefs.edit();
     }
 
-    public ArrayList<String> getSavedPreferencesSetNames() {
-        String jsonStr = prefs.getString(savedPreferencesNamesKey, "");
-        if(!jsonStr.equals("")) {
-            Object jsonObj = AlzTestSerializeManager.deSerialize(jsonStr, ArrayList.class);
-            if (jsonObj != null) {
-                return (ArrayList<String>) jsonObj;
-            }
-        }
-        return null;
-    }
-
     /**
      * Returns new AlzTestUserPrefs if not found
      * @returns new AlzTestUserPrefs if not found
      */
-    public AlzTestUserPrefs getLastSavedPreferencesSet() {
-        return getPreferenceSet(prefs.getString(lastSavedKey, ""));
+    public AlzTestUserPrefs getCachedPreferencesSet() {
+        return getPreferenceSet(tempSetKey);
     }
 
+
+    public void setCachedPreferencesSet(AlzTestUserPrefs set) {
+        setPreferenceSet(null, set);
+    }
 
     /**
      * Returns new set if not existing
@@ -68,42 +57,18 @@ public class AlzTestPreferencesManager {
      * passing null set is equivelant to remove(setName)
      * passing null name creates a temporary cahced name
      */
-    public  void setPreferenceSet(String setName, AlzTestUserPrefs set) {
+    public void setPreferenceSet(String setName, AlzTestUserPrefs set) {
         if(setName == null){
             setName = tempSetKey;
         }
         if(set != null) {
             editor.putString(setName, AlzTestSerializeManager.serialize(set));
-            editor.putString(lastSavedKey, setName);
-            addNameToPrefNames(setName);
         }else{
             editor.putString(setName, null);
         }
         editor.commit();
     }
 
-    private void addNameToPrefNames(String setName) {
-        if(!setName.equals(tempSetKey)) {
-            ArrayList<String> prefNames;
-            String jsonStr = prefs.getString(savedPreferencesNamesKey, "");
-            if (!jsonStr.equals("")) {
-                Object jsonObj = AlzTestSerializeManager.deSerialize(jsonStr, ArrayList.class);
-                if (jsonObj != null) {
-                    prefNames = (ArrayList<String>) jsonObj;
-                } else {
-                    prefNames = new ArrayList<String>();
-                }
-            } else {
-                prefNames = new ArrayList<String>();
-            }
-
-            if (!prefNames.contains(setName)) {
-                prefNames.add(setName);
-                editor.putString(savedPreferencesNamesKey, AlzTestSerializeManager.serialize(prefNames));
-                editor.commit();
-            }
-        }
-    }
 
     /**
      * returns null if non existing

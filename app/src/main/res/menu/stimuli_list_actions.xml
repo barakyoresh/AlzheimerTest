@@ -15,8 +15,11 @@
         android:title="@string/action_add"
         android:showAsAction="collapseActionView|ifRoom" />
     <item android:id="@+id/action_upload"
-        android:icon="@drawable/ic_action_upload"
-        android:title="@string/upload_stimuli"/>
+    android:icon="@drawable/ic_action_upload"
+    android:title="@string/upload_stimuli"/>
+    <item android:id="@+id/action_save"
+        android:icon="@drawable/ic_action_save"
+        android:title="@string/action_save_stimuli"/>
     <item android:id="@+id/action_clear"
         android:icon="@drawable/ic_action_upload"
         android:title="@string/clear_stimuli"/>

@@ -5,6 +5,7 @@
 package com.alztest.alztest.Stimuli;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,13 +19,20 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.Toast;
 
+import com.alztest.alztest.Dialogs.AddDialog;
+import com.alztest.alztest.Dialogs.ClearDialog;
+import com.alztest.alztest.Dialogs.EditDialog;
+import com.alztest.alztest.Dialogs.FileDialogCallback;
+import com.alztest.alztest.Dialogs.SaveDialog;
+import com.alztest.alztest.Dialogs.UploadDialog;
 import com.alztest.alztest.OptionListActivity;
 import com.alztest.alztest.R;
-import com.alztest.alztest.Stimuli.Dialogs.AddDialog;
-import com.alztest.alztest.Stimuli.Dialogs.ClearDialog;
-import com.alztest.alztest.Stimuli.Dialogs.EditDialog;
-import com.alztest.alztest.Stimuli.Dialogs.UploadDialog;
+
+import java.io.File;
+
+import static com.alztest.alztest.Stimuli.StimuliBrain.appendStimuliToDbFromExternalFile;
 
 /**
  * Created by Barak Yoresh on 29/11/2014.
@@ -126,6 +134,9 @@ public class StimuliListFragment extends Fragment{
             case R.id.action_add:
                 openAddDialog();
                 return true;
+            case R.id.action_save:
+                openSaveDialog();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -167,7 +178,37 @@ public class StimuliListFragment extends Fragment{
     private void openUploadDialog() {
         Log.v(OptionListActivity.APPTAG, "uploading now");
         UploadDialog ud = new UploadDialog();
+        ud.setCallback(new FileDialogCallback() {
+            @Override
+            public void onChooseFile(Activity activity, File file) {
+                boolean operationSuccesful;
+                operationSuccesful = appendStimuliToDbFromExternalFile(file);
+                if (operationSuccesful) {
+                    StimuliListFragment.upDateListFromDB();
+                }
+                Log.v(OptionListActivity.APPTAG, operationSuccesful ? "success!" : "failed :(");
+                Toast toast = Toast.makeText(getActivity(), operationSuccesful ? "Loaded file successfully" : "Loading file failed :(", Toast.LENGTH_SHORT);
+                toast.show();
+
+            }
+        });
         ud.show(getFragmentManager(), getString(R.string.upload_stimuli));
+    }
+
+    private void openSaveDialog() {
+        Log.v(OptionListActivity.APPTAG, "saving now");
+        SaveDialog sd = new SaveDialog();
+        sd.setCallback(new FileDialogCallback() {
+            @Override
+            public void onChooseFile(Activity activity, File file) {
+                Log.v(OptionListActivity.APPTAG, "saving file - " + file.getAbsolutePath());
+                boolean operationSuccesful = StimuliBrain.saveStimuliToFile(sAdapter.stimuli, file);
+                Log.v(OptionListActivity.APPTAG, operationSuccesful ? "success!" : "failed :(");
+                Toast toast = Toast.makeText(getActivity(), operationSuccesful ? "File saved successfully" : "File saving failed :(", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+        sd.show(getFragmentManager(), getString(R.string.save_stimuli));
     }
 
     private void openClearDialog() {

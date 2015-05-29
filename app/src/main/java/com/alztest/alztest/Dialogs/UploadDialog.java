@@ -2,7 +2,7 @@
  * Copyright (c) 2014. Barak Yoresh. all rights reserved.
  */
 
-package com.alztest.alztest.Stimuli.Dialogs;
+package com.alztest.alztest.Dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -14,12 +14,9 @@ import android.util.Log;
 
 import com.alztest.alztest.OptionListActivity;
 import com.alztest.alztest.R;
-import com.alztest.alztest.Stimuli.StimuliListFragment;
 
 import java.io.File;
 import java.io.FilenameFilter;
-
-import static com.alztest.alztest.Stimuli.StimuliBrain.appendStimuliToDbFromExternalFile;
 
 /**
  * Created by Barak Yoresh on 29/11/2014.
@@ -35,6 +32,12 @@ public class UploadDialog extends DialogFragment {
     private static final String FTYPE2 = ".xlsx";
     private static final String TAG = "UploadDialog";
     private static final String ELIPSIS = "\\...";
+    private FileDialogCallback callback = null;
+    public String extensionType = "xls";
+
+    public void setCallback(FileDialogCallback callback) {
+        this.callback = callback;
+    }
 
 
     private void loadFileList() {
@@ -52,7 +55,7 @@ public class UploadDialog extends DialogFragment {
                 @Override
                 public boolean accept(File dir, String filename) {
                     File sel = new File(dir, filename);
-                    return filename.contains(FTYPE1) || filename.contains(FTYPE2) || sel.isDirectory();
+                    return filename.contains("." + extensionType) || sel.isDirectory();
                 }
 
             };
@@ -110,10 +113,12 @@ public class UploadDialog extends DialogFragment {
                 if(sel.isDirectory()) {
                     Log.v(OptionListActivity.APPTAG, "Directory!");
                     UploadDialog ud = new UploadDialog();
+                    ud.setCallback(callback);
                     Bundle bundle = new Bundle();
                     bundle.putString(ALTERNATIVE_PATH, sel.getPath());
                     Log.v(OptionListActivity.APPTAG, "putting arg - " + sel.getPath());
                     ud.setArguments(bundle);
+                    ud.extensionType = extensionType;
                     ud.show(getFragmentManager(), getString(R.string.upload_stimuli));
                 }
                 //file or Elipsis
@@ -124,17 +129,20 @@ public class UploadDialog extends DialogFragment {
                             Log.v(OptionListActivity.APPTAG, "base path");
                         }else{
                             UploadDialog ud = new UploadDialog();
+                            ud.setCallback(callback);
                             Bundle bundle = new Bundle();
                             bundle.putString(ALTERNATIVE_PATH, mPath.getPath().substring(0, mPath.getPath().lastIndexOf("/")));
                             Log.v(OptionListActivity.APPTAG, "putting arg - " + mPath.getPath().substring(0, mPath.getPath().lastIndexOf("/")));
                             ud.setArguments(bundle);
+                            ud.extensionType = extensionType;
                             ud.show(getFragmentManager(), getString(R.string.upload_stimuli));
                         }
                     }else{
                         //regular file
                         Log.v(OptionListActivity.APPTAG, "Got file - " + sel.getName());
-                        appendStimuliToDbFromExternalFile(getActivity(), sel);
-                        StimuliListFragment.upDateListFromDB();
+                        if(callback != null) {
+                            callback.onChooseFile(getActivity(), sel);
+                        }
                     }
                 }
             }
