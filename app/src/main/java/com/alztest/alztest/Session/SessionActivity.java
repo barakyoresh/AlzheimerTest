@@ -90,6 +90,9 @@ public class SessionActivity extends Activity {
         //init stats
         sessionStatistics = new AlzTestSessionStatistics(this.getIntent().getStringExtra(NewSessionFragment.SUBJECT_NAME),
                                                          this.getIntent().getLongExtra(NewSessionFragment.SUBJECT_ID, -1));
+        sessionStatistics.setMMSEOrientationSpace(this.getIntent().getIntExtra(NewSessionFragment.MMSE_SPACE, -1));
+        sessionStatistics.setMMSEOrientationTime(this.getIntent().getIntExtra(NewSessionFragment.MMSE_TIME, -1));
+        sessionStatistics.setMMSETotal(this.getIntent().getIntExtra(NewSessionFragment.MMSE_TOTAL, -1));
 
         for (Pair<Stimulus, Stimulus> p : sessionStimuliPairs){
             Log.v(OptionListActivity.APPTAG, p.first.getName() + " : " + p.second.getName());

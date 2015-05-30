@@ -34,6 +34,11 @@
     <string name="sessionCountdownTooltip">Number of seconds before session stats</string>
     <string name="action_save_stimuli">Save stimuli to file</string>
     <string name="save_stimuli">save stimuli</string>
+    <string name="personalInformationHeader">Personal Information</string>
+    <string name="orientationSpaceTooltip">Orientation Space</string>
+    <string name="orientationTimeTooltip">Orientation Time</string>
+    <string name="totalTooltip">Total</string>
+    <string name="MMSEScoresHeader">Mini-Mental State Examination (MMSE) Score</string>
 
 
 </resources>

@@ -38,6 +38,8 @@ public class StatisticsActivity extends Activity {
             AlzTestSessionStatistics stat = (AlzTestSessionStatistics) AlzTestSerializeManager.deSerialize(statStr, AlzTestSessionStatistics.class);
 
             if(stat != null) {
+                Log.v(OptionListActivity.APPTAG, String.valueOf(stat.getMMSETotal()));
+
                 Log.v(OptionListActivity.APPTAG, stat.getSubjectName());
 
                 ArrayList<AlzTestSingleClickStats> clickStats = stat.getStatistics();
@@ -48,9 +50,9 @@ public class StatisticsActivity extends Activity {
             }
         }
 
-
-
         //TODO handle reaching here
+
+
         return;
     }
 

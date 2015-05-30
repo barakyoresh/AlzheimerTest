@@ -33,6 +33,12 @@ public class AlzTestSessionStatistics {
     public String subjectName;
     @DatabaseField
     public long subjectId;
+    @DatabaseField
+    public int MMSEOrientationSpace;
+    @DatabaseField
+    public int MMSEOrientationTime;
+    @DatabaseField
+    public int MMSETotal;
     @DatabaseField(dataType = DataType.SERIALIZABLE)
     private ArrayList<String> statistics;
 
@@ -43,6 +49,61 @@ public class AlzTestSessionStatistics {
         statistics = new ArrayList<String>();
         this.subjectName = subjectName;
         this.subjectId = subjectId;
+    }
+
+
+    public int getMMSETotal() {
+        return MMSETotal;
+    }
+
+    public void setMMSETotal(int MMSETotal) {
+        this.MMSETotal = MMSETotal;
+    }
+
+    public int getMMSEOrientationSpace() {
+        return MMSEOrientationSpace;
+    }
+
+    public void setMMSEOrientationSpace(int MMSEOrientationSpace) {
+        this.MMSEOrientationSpace = MMSEOrientationSpace;
+    }
+
+    public int getMMSEOrientationTime() {
+        return MMSEOrientationTime;
+    }
+
+    public void setMMSEOrientationTime(int MMSEOrientationTime) {
+        this.MMSEOrientationTime = MMSEOrientationTime;
+    }
+
+    public void setMMSEScore(int orientationSpace, int orientationTime, int total) {
+        this.MMSEOrientationSpace = orientationSpace;
+        this.MMSEOrientationTime = orientationTime;
+        this.MMSETotal = total;
+    }
+
+    public static ArrayList<Integer> getMMSEOrientationSpaceValues(){
+        ArrayList<Integer> values = new ArrayList<Integer>();
+        for (int i = 1 ; i <= 5 ; i++) {
+            values.add(i);
+        }
+        return values;
+    }
+
+    public static ArrayList<Integer> getMMSEOrientationTimeValues(){
+        ArrayList<Integer> values = new ArrayList<Integer>();
+        for (int i = 1 ; i <= 5 ; i++) {
+            values.add(i);
+        }
+        return values;
+    }
+
+    public static ArrayList<Integer> getMMSETotalValues(){
+        ArrayList<Integer> values = new ArrayList<Integer>();
+        for (int i = 1 ; i <= 30 ; i++) {
+            values.add(i);
+        }
+        return values;
     }
 
     public Date getSessionStartTime() {
