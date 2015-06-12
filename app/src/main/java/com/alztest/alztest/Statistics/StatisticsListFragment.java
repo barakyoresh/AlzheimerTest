@@ -5,6 +5,7 @@
 package com.alztest.alztest.Statistics;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,12 +20,17 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.Toast;
 
+import com.alztest.alztest.Dialogs.ClearDialog;
+import com.alztest.alztest.Dialogs.FileDialogCallback;
+import com.alztest.alztest.Dialogs.SaveDialog;
 import com.alztest.alztest.OptionListActivity;
 import com.alztest.alztest.R;
-import com.alztest.alztest.Dialogs.ClearDialog;
-import com.alztest.alztest.Dialogs.UploadDialog;
 import com.alztest.alztest.Toolbox.AlzTestSerializeManager;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
 
 /**
  * Created by Barak Yoresh on 29/11/2014.
@@ -118,7 +124,7 @@ public class StatisticsListFragment extends Fragment{
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.action_export:
-                openExportDialog();
+                openSaveDialog();
                 return true;
             case R.id.action_search:
                 return false;
@@ -165,11 +171,41 @@ public class StatisticsListFragment extends Fragment{
     }
 
 
-    private void openExportDialog() {
-        //TODO: implement export, also migrate to stimuli once done
-        Log.v(OptionListActivity.APPTAG, "uploading now");
-        UploadDialog ud = new UploadDialog();
-        ud.show(getFragmentManager(), getString(R.string.upload_stimuli));
+    private void openSaveDialog() {
+        SaveDialog sd = new SaveDialog();
+        sd.extensionType = "";
+        sd.defaultFileName = "New Folder";
+        sd.setCallback(new FileDialogCallback() {
+            @Override
+            public void onChooseFile(Activity activity, File file) {
+                boolean operationSuccessful = true;
+                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+                file.mkdir();
+                for(AlzTestSessionStatistics stat : sAdapter.stats) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(stat.getSubjectName()).append(" ").append(stat.getSubjectId()).append(" ")
+                            .append(sdf.format(stat.getSessionStartTime())).append(".xls");
+                    File f = new File(file.getAbsolutePath() + "/" + sb.toString());
+                    if(f.exists()) {
+                        int i = 1;
+                        String origpath = f.getAbsolutePath().substring(0, f.getAbsolutePath().lastIndexOf("."));
+                        while(f.exists()) {
+                            //add (i) to file name
+                            f = new File(origpath + "(" + Integer.toString(i) + ")" + ".xls");
+                            i++;
+                        }
+                    }
+                    if(!AlzTestStatisticsBrain.saveStatisticsToFile(stat, f)) {
+                       operationSuccessful = false;
+                    }
+                }
+
+                Log.v(OptionListActivity.APPTAG, operationSuccessful ? "success!" : "failed :(");
+                Toast toast = Toast.makeText(activity, operationSuccessful ? "Saved Statistics file successfully" : "Saving Statistics file failed :(", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+        sd.show(getFragmentManager(), getString(R.string.action_save_preferences));
     }
 
 

@@ -12,9 +12,6 @@ import com.alztest.alztest.Stimuli.Stimulus;
 
 import java.io.Serializable;
 
-enum StimulusSelection {left, right};
-
-
 public class AlzTestSingleClickStats implements Serializable{
     public Stimulus leftStim, rightStim;
     public StimulusSelection selected;

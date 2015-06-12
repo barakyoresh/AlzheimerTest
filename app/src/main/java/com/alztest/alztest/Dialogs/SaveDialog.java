@@ -31,7 +31,7 @@ public class SaveDialog extends DialogFragment {
 
     public static final String ALTERNATIVE_PATH = "alternative_path";
     public static final String FILE_NAME = "file_name";
-    public static final String DEFAULT_FILE_NAME = "untitled";
+    public static String defaultFileName = "untitled";
     private String[] mFileList;
     private static final File basePath = Environment.getExternalStorageDirectory();
     private File mPath = basePath;
@@ -133,7 +133,7 @@ public class SaveDialog extends DialogFragment {
         builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String fullFileName = mPath.getPath() + "/" + (validFileName(fileName) ? fileName : DEFAULT_FILE_NAME) + "." + extensionType;
+                String fullFileName = mPath.getPath() + "/" + (validFileName(fileName) ? fileName : defaultFileName) + (extensionType.equals("") ? "" : "." + extensionType);
                 File f = new File(fullFileName);
                 if (!f.exists()) {
                     callback.onChooseFile(getActivity(), f);
@@ -210,13 +210,13 @@ public class SaveDialog extends DialogFragment {
     private View getInputView() {
         input = new EditText(getActivity());
         TextView extension = new TextView(getActivity());
-        extension.setText("." + extensionType);
+        extension.setText(extensionType.equals("") ? "" : "." + extensionType);
         LinearLayout l = new LinearLayout(getActivity());
         l.addView(input);
         l.addView(extension);
 
         if(fileName.equals("")) {
-            input.setHint(DEFAULT_FILE_NAME);
+            input.setHint(defaultFileName);
         } else {
             input.setText(fileName);
         }
