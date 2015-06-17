@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
 import android.util.Pair;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -58,6 +59,11 @@ public class SessionActivity extends Activity {
         //load last userPrefs
         AlzTestPreferencesManager prefsManager = new AlzTestPreferencesManager(this);
         userPrefs = prefsManager.getCachedPreferencesSet();
+
+        //set stimuli text size
+        float textSizeMultiplier = (userPrefs.getTextSize() / 100);
+        leftStimulus.setTextSize(TypedValue.COMPLEX_UNIT_PX, leftStimulus.getTextSize() * textSizeMultiplier);
+        rightStimulus.setTextSize(TypedValue.COMPLEX_UNIT_PX, rightStimulus.getTextSize() * textSizeMultiplier);
 
         //load statistics DB
         AlzTestDatabaseManager.init(this);

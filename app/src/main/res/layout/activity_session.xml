@@ -26,7 +26,7 @@
             android:id="@+id/leftStimulus"
             android:layout_gravity="center_vertical"
             android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true" />
+            android:layout_centerHorizontal="true"/>
     </RelativeLayout>
 
     <RelativeLayout
@@ -41,6 +41,7 @@
             android:layout_weight="1"
             android:textSize="60dp"
             android:textColor="@android:color/white"
+            android:textAlignment="center"
             android:text=""
             android:id="@+id/rightStimulus"
             android:layout_gravity="center_vertical"

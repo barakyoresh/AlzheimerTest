@@ -39,6 +39,7 @@
     <string name="orientationTimeTooltip">Orientation Time</string>
     <string name="totalTooltip">Total</string>
     <string name="MMSEScoresHeader">Mini-Mental State Examination (MMSE) Score</string>
+    <string name="sessionTextSizeHeader">Session Stimuli Text Size</string>
 
 
 </resources>

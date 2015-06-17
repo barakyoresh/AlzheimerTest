@@ -5,11 +5,14 @@
 package com.alztest.alztest.Prefrences;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,6 +23,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -77,7 +81,11 @@ public class AlzTestPrefrencesFragment extends Fragment {
         // number of stimuli widget
         setupNumOfStimWidget();
 
+        //countdown before session start
         setupSessionCountdownWidget();
+
+        //size of stimuli text
+        setupSessionTextSizeWidget();
 
         // dummy widgets
         setupDummyWidgets();
@@ -102,10 +110,67 @@ public class AlzTestPrefrencesFragment extends Fragment {
         sessCountdown.setSelection(userPrefs.getCountdownTimerValuePosition());
     }
 
+    private void setupSessionTextSizeWidget() {
+        //spinner
+        final Spinner sessTextSize = (Spinner) rootView.findViewById(R.id.textSizeSpinner);
+
+        //get text sizes as string array with '%' char
+        ArrayList<String> textSizesStrings = new ArrayList<String>();
+        for (int textSize : userPrefs.getAllTextSizes()) {
+            textSizesStrings.add(Integer.toString(textSize) + "%");
+        }
+        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item,
+                textSizesStrings);
+        sessTextSize.setAdapter(adapter);
+        sessTextSize.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                userPrefs.setTextSize(Integer.decode(adapter.getItem(position).substring(0, adapter.getItem(position).indexOf("%"))));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        sessTextSize.setSelection(userPrefs.getTextSizePosition());
+
+
+        //icon
+        ImageView infoIcon = (ImageView) rootView.findViewById(R.id.textSizeInfoImage);
+        infoIcon.setClickable(true);
+        infoIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openExampleTextSizeDialog();
+            }
+        });
+
+    }
+
+    private void openExampleTextSizeDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Stimuli Text Size");
+
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_example_stimuli_size, null);
+        TextView exampleText = (TextView) dialogView.findViewById(R.id.exampleText);
+        float textSizeMultiplier = (userPrefs.getTextSize() / 100);
+        exampleText.setTextSize(TypedValue.COMPLEX_UNIT_PX, exampleText.getTextSize() * textSizeMultiplier);
+        builder.setView(dialogView);
+        builder.setNeutralButton("Close", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        builder.create().show();
+    }
+
     private void setupDummyWidgets() {
         //seekbar
         SeekBar sb = (SeekBar) rootView.findViewById(R.id.seekBar);
-        sb.setMax(256);
+        sb.setMax(3);
         sb.setProgress(userPrefs.getScroller());
 
         sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {

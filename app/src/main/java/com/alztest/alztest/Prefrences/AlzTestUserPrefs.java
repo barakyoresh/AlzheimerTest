@@ -5,6 +5,9 @@
 package com.alztest.alztest.Prefrences;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 
 /**
  * Created by Barak Yoresh on 14/02/2015.
@@ -14,33 +17,20 @@ public class AlzTestUserPrefs {
     private boolean swtich = false;
 
 
-
+    private int textSize = 100;
     private boolean allowRepetition = false;
     private int operation = 0;
     private int numberOfPairsInTrial = 0;
     private int maximumValueDifference = 6;
     private int minimumValueDifference = 0;
-    private final ArrayList<String> opertaions = new ArrayList<String>();
-    private final ArrayList<Integer> allValueDifferences = new ArrayList<Integer>();
-    private final ArrayList<Integer> AllSessCountdownTimes = new ArrayList<Integer>();
+    private static ArrayList<String> opertaions = new ArrayList<String>(Arrays.asList("Use All Except:", "Use Only:"));
+    private static ArrayList<Integer> allValueDifferences = new ArrayList<Integer>(Arrays.asList(0, 1, 2, 3, 4, 5, 6));
+    private static ArrayList<Integer> AllSessCountdownTimes = new ArrayList<Integer>(Arrays.asList(5, 3, 1, 0));
+    private static ArrayList<Integer> getAllTextSizes = new ArrayList<Integer>((Arrays.asList(100, 150, 200, 250)));
     private ArrayList<String> selectedCategories = new ArrayList<String>();
     private int countdownTimerValue = 0;
 
-    public AlzTestUserPrefs(){
-        opertaions.add("Use All Except:");
-        opertaions.add("Use Only:");
-        allValueDifferences.add(0);
-        allValueDifferences.add(1);
-        allValueDifferences.add(2);
-        allValueDifferences.add(3);
-        allValueDifferences.add(4);
-        allValueDifferences.add(5);
-        allValueDifferences.add(6);
-        AllSessCountdownTimes.add(5);
-        AllSessCountdownTimes.add(3);
-        AllSessCountdownTimes.add(1);
-        AllSessCountdownTimes.add(0);
-    }
+    public AlzTestUserPrefs(){    }
 
     public boolean isAllowRepetition() {
         return allowRepetition;
@@ -140,5 +130,21 @@ public class AlzTestUserPrefs {
 
     public int getCountdownTimerValuePosition() {
         return AllSessCountdownTimes.indexOf(countdownTimerValue);
+    }
+
+    public int getTextSizePosition() {
+        return getAllTextSizes.indexOf(textSize);
+    }
+
+    public int getTextSize() {
+        return textSize;
+    }
+
+    public void setTextSize(int textSize) {
+        this.textSize = textSize;
+    }
+
+    public List<Integer> getAllTextSizes() {
+        return getAllTextSizes;
     }
 }
