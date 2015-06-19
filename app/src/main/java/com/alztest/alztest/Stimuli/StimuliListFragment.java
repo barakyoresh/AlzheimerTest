@@ -233,4 +233,27 @@ public class StimuliListFragment extends Fragment{
         Bundle bundle = new Bundle();
         ud.show(getFragmentManager(), getString(R.string.action_add));
     }
+
+
+    //search
+     /* ------- TEST ZONE ----- *//*
+        try {
+            QueryBuilder<AlzTestSessionStatistics, Date> qb = AlzTestDatabaseManager.getInstance().getHelper().getAlzTestSessionStatisticsDao().queryBuilder();
+            Where where = qb.where();
+            // the name field must be equal to "foo"
+            where.eq("subjectName", "b");
+            PreparedQuery<AlzTestSessionStatistics> preparedQuery = qb.prepare();
+
+            ArrayList<AlzTestSessionStatistics> sessStats = (ArrayList<AlzTestSessionStatistics>) AlzTestDatabaseManager.getInstance().getHelper().getAlzTestSessionStatisticsDao().query(preparedQuery);
+            Log.v(OptionListActivity.APPTAG, "make sure stats DB works - ");
+            for(AlzTestSessionStatistics stats : sessStats){
+                Log.v(OptionListActivity.APPTAG, "Stats made for " + stats.getSubjectName() + ", " + stats.getSubjectId());
+                for(AlzTestSingleClickStats clickStats : stats.getStatistics()){
+                    Log.v(OptionListActivity.APPTAG, clickStats.toString());
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        /* ----------------------- */
 }

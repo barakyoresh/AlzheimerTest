@@ -32,7 +32,7 @@ public class AlzTestSessionFactory {
             e.printStackTrace();
         }
     }
-    public ArrayList<Pair<Stimulus, Stimulus>> buildSessionData(AlzTestUserPrefs userPrefs) {
+    public ArrayList<ArrayList<Pair<Stimulus, Stimulus>>> buildSessionData(AlzTestUserPrefs userPrefs) {
         int numOfTrials = userPrefs.getNumberOfPairsInTrial(), stimuliSize = stimuli.size();
 
         //remove un-included categories
@@ -64,7 +64,9 @@ public class AlzTestSessionFactory {
                 }
             }
         }
-        return sessionData;
+
+
+        return clusterByCategory(sessionData);
     }
 
     public ArrayList<Stimulus> removeRedundentCategories(AlzTestUserPrefs userPrefs, int stimuliSize) {
@@ -81,5 +83,29 @@ public class AlzTestSessionFactory {
             }
         }
         return stimuliCopy;
+    }
+
+    public static ArrayList<ArrayList<Pair<Stimulus, Stimulus>>> clusterByCategory(ArrayList<Pair<Stimulus, Stimulus>> stimuliPairs) {
+        ArrayList<ArrayList<Pair<Stimulus, Stimulus>>> stimuliByCategory = new ArrayList<ArrayList<Pair<Stimulus, Stimulus>>>();
+
+        for (Pair<Stimulus, Stimulus> s : stimuliPairs) {
+            String category = s.first.getCategory();
+            boolean listExists = false;
+            //if category exists, add it to correct list
+            for (ArrayList<Pair<Stimulus, Stimulus>> categoryStimuli : stimuliByCategory) {
+                if ( categoryStimuli.size() > 0 && categoryStimuli.get(0).first.getCategory().equals(category)) {
+                    categoryStimuli.add(s);
+                    listExists = true;
+                    break;
+                }
+            }
+            if (!listExists) {
+                ArrayList<Pair<Stimulus, Stimulus>> l = new ArrayList<Pair<Stimulus, Stimulus>>();
+                l.add(s);
+                stimuliByCategory.add(l);
+            }
+        }
+
+        return stimuliByCategory;
     }
 }

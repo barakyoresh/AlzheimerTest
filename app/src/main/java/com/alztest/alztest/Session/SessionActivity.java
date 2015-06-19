@@ -37,6 +37,7 @@ import java.util.concurrent.TimeUnit;
 public class SessionActivity extends Activity {
     private TextView leftStimulus, rightStimulus;
     private Stimulus currentLeftStimulus, currentRightStimulus;
+    private ArrayList<ArrayList<Pair<Stimulus, Stimulus>>> sessionStimuliPairsByCategory;
     private ArrayList<Pair<Stimulus, Stimulus>> sessionStimuliPairs;
     private AlzTestSessionStatistics sessionStatistics;
     private AlzTestUserPrefs userPrefs;
@@ -68,30 +69,19 @@ public class SessionActivity extends Activity {
         //load statistics DB
         AlzTestDatabaseManager.init(this);
 
-        /* ------- TEST ZONE ----- *//*
-        try {
-            QueryBuilder<AlzTestSessionStatistics, Date> qb = AlzTestDatabaseManager.getInstance().getHelper().getAlzTestSessionStatisticsDao().queryBuilder();
-            Where where = qb.where();
-            // the name field must be equal to "foo"
-            where.eq("subjectName", "b");
-            PreparedQuery<AlzTestSessionStatistics> preparedQuery = qb.prepare();
-
-            ArrayList<AlzTestSessionStatistics> sessStats = (ArrayList<AlzTestSessionStatistics>) AlzTestDatabaseManager.getInstance().getHelper().getAlzTestSessionStatisticsDao().query(preparedQuery);
-            Log.v(OptionListActivity.APPTAG, "make sure stats DB works - ");
-            for(AlzTestSessionStatistics stats : sessStats){
-                Log.v(OptionListActivity.APPTAG, "Stats made for " + stats.getSubjectName() + ", " + stats.getSubjectId());
-                for(AlzTestSingleClickStats clickStats : stats.getStatistics()){
-                    Log.v(OptionListActivity.APPTAG, clickStats.toString());
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        /* ----------------------- */
-
-        //Build prefs
+        //Build pairs
         AlzTestSessionFactory sessionFactory = new AlzTestSessionFactory(this);
-        sessionStimuliPairs = sessionFactory.buildSessionData(userPrefs);
+        sessionStimuliPairsByCategory = sessionFactory.buildSessionData(userPrefs);
+
+        if(sessionStimuliPairsByCategory.size() > 0) {
+            sessionStimuliPairs = sessionStimuliPairsByCategory.remove(0);
+        }else {
+            sessionStimuliPairs = null;
+        }
+
+       /* for (Pair<Stimulus, Stimulus> p : sessionStimuliPairs){
+            Log.v(OptionListActivity.APPTAG, p.first.getName() + " : " + p.second.getName());
+       }*/
 
         //init stats
         sessionStatistics = new AlzTestSessionStatistics(this.getIntent().getStringExtra(NewSessionFragment.SUBJECT_NAME),
@@ -100,9 +90,7 @@ public class SessionActivity extends Activity {
         sessionStatistics.setMMSEOrientationTime(this.getIntent().getIntExtra(NewSessionFragment.MMSE_TIME, -1));
         sessionStatistics.setMMSETotal(this.getIntent().getIntExtra(NewSessionFragment.MMSE_TOTAL, -1));
 
-        for (Pair<Stimulus, Stimulus> p : sessionStimuliPairs){
-            Log.v(OptionListActivity.APPTAG, p.first.getName() + " : " + p.second.getName());
-        }
+
 
 
 
@@ -121,14 +109,21 @@ public class SessionActivity extends Activity {
             }
         });
 
-        invokeCountdown(userPrefs.getCountdownTimerValue(), this);
+        if(sessionStimuliPairs != null && sessionStimuliPairs.size() > 0) {
+            invokeCountdown(this, "New Session, Category: " + sessionStimuliPairs.get(0).first.getCategory());
+        }else{
+            //TODO: when implementing pause on back, make sure empty sessions still work fine
+            Toast.makeText(this, "Insufficient Stimuli for session", Toast.LENGTH_SHORT).show();
+            onBackPressed();
+        }
    }
 
-    private void invokeCountdown(int timeInSeconds, Activity activity) {
+    private void invokeCountdown(Activity activity, String title) {
+        int timeInSeconds = userPrefs.getCountdownTimerValue();
         //TODO: put stuff in finals. magic numbers!
         if(timeInSeconds > 0) {
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-            builder.setTitle("New Session");
+            builder.setTitle(title);
 
             LayoutInflater inflater = activity.getLayoutInflater();
             builder.setMessage("Starting in " + timeInSeconds + "...");
@@ -187,23 +182,30 @@ public class SessionActivity extends Activity {
     }
 
     private void finishSession() {
-        sessionStatistics.setSessionEndTime(new Date());
+        if (sessionStimuliPairsByCategory.size() > 0) {
+            //proceed to next category
+            sessionStimuliPairs = sessionStimuliPairsByCategory.remove(0);
+            invokeCountdown(this, "Continue session, Category: " + sessionStimuliPairs.get(0).first.getCategory());
+        }else{
+            //finish session
+            sessionStatistics.setSessionEndTime(new Date());
 
-        Toast toast;
+            Toast toast;
 
-        try {
-            AlzTestDatabaseManager.getInstance().getHelper().getAlzTestSessionStatisticsDao().create(sessionStatistics);
-            toast =  Toast.makeText(this, "Information saved to database", Toast.LENGTH_SHORT);
-        } catch (SQLException e) {
-            Log.v(OptionListActivity.APPTAG, "Failed adding data to DB");
-            e.printStackTrace();
-            toast =  Toast.makeText(this, "Database error! information lost :(", Toast.LENGTH_SHORT);
+            try {
+                AlzTestDatabaseManager.getInstance().getHelper().getAlzTestSessionStatisticsDao().create(sessionStatistics);
+                toast =  Toast.makeText(this, "Information saved to database", Toast.LENGTH_SHORT);
+            } catch (SQLException e) {
+                Log.v(OptionListActivity.APPTAG, "Failed adding data to DB");
+                e.printStackTrace();
+                toast =  Toast.makeText(this, "Database error! information lost :(", Toast.LENGTH_SHORT);
+            }
+
+            StatisticsListFragment.upDateListFromDB();
+
+            toast.show();
+            onBackPressed();
         }
-
-        StatisticsListFragment.upDateListFromDB();
-
-        toast.show();
-        onBackPressed();
     }
 
     private void subjectClicked(StimulusSelection selected) {
