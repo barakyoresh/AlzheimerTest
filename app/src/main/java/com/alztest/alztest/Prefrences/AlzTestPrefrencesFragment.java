@@ -24,6 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -447,6 +448,29 @@ public class AlzTestPrefrencesFragment extends Fragment {
         });
 
         operationSelectionSpinner.setSelection(userPrefs.getOperationSelection());
+
+        //fix for android issue preventing a fully extended list view within a scrollable view
+        setListViewHeightBasedOnChildren(categorySelectionListView);
+    }
+
+    /**** Method for Setting the Height of the ListView dynamically.
+     **** Hack to fix the issue of not showing all the items of the ListView
+     **** when placed inside a ScrollView
+     **** This method was taken from the internet - http://stackoverflow.com/questions/18367522/android-list-view-inside-a-scroll-view ****/
+    public static void setListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null)
+            return;
+
+        int desiredWidth = View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.UNSPECIFIED);
+        listView.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
+        int listHeight = listView.getMeasuredHeight();
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = listHeight * listAdapter.getCount() + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+
+        listView.setLayoutParams(params);
+        listView.requestLayout();
     }
 
     @Override

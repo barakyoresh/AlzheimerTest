@@ -59,7 +59,6 @@ public class AlzTestSessionFactory {
                         && diff >= userPrefs.getMinimumValueDifference()) {
                     sessionData.add(new Pair<Stimulus, Stimulus>(firstStim, s));
                     stimuliCopy.remove(s);
-                    //TODO: make sure this pythonish thing doesnt break the planet
                     break;
                 }
             }
@@ -73,11 +72,11 @@ public class AlzTestSessionFactory {
         ArrayList<Stimulus> stimuliCopy = new ArrayList<Stimulus>(stimuli);
         for(int i = stimuliSize - 1; i >= 0; i--) {
             if((userPrefs.getSelectedCategories().contains(stimuliCopy.get(i).getCategory()))) {
-                if(userPrefs.getOperationSelection() == 0/*TODO: some hardcoded poop right here, change to enum*/){
+                if(userPrefs.getOperationSelection() == 0/*TODO: some hardcoded content right here, change to enum*/){
                     stimuliCopy.remove(i);
                 }
             } else {
-                if(userPrefs.getOperationSelection() == 1/*TODO: some hardcoded poop right here, change to enum*/){
+                if(userPrefs.getOperationSelection() == 1/*TODO: some hardcoded content right here, change to enum*/){
                     stimuliCopy.remove(i);
                 }
             }

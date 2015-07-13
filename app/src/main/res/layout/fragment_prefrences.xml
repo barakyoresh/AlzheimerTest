@@ -2,9 +2,13 @@
 <!--
   ~ Copyright (c) 2015. Barak Yoresh. all rights reserved.
   -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<LinearLayout
+    android:orientation="vertical" android:layout_width="fill_parent"
     android:layout_height="fill_parent">
     <!-- choose specific categories -->
 
@@ -237,4 +241,7 @@
         android:text="New Switch"
         android:id="@+id/switch1"
         android:layout_gravity="center_horizontal" />
+
+
 </LinearLayout>
+</ScrollView>
