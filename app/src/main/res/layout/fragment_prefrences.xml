@@ -20,24 +20,12 @@
         android:textSize="18sp"
         android:text="@string/categoryOptionsHeader" />
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
+    <ListView
+        android:layout_width="match_parent"
         android:layout_margin="5dp"
-        android:layout_height="wrap_content">
-
-        <Spinner
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:dropDownWidth="wrap_content"
-            android:id="@+id/operationSpinner" />
-
-        <ListView
-            android:layout_width="wrap_content"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:id="@+id/categoryListView" />
-    </LinearLayout>
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:id="@+id/categoryListView" />
 
     <View
         android:layout_width="fill_parent"

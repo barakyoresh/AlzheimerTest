@@ -27,7 +27,7 @@ public class AlzTestUserPrefs {
     private static ArrayList<Integer> allValueDifferences = new ArrayList<Integer>(Arrays.asList(0, 1, 2, 3, 4, 5, 6));
     private static ArrayList<Integer> AllSessCountdownTimes = new ArrayList<Integer>(Arrays.asList(5, 3, 1, 0));
     private static ArrayList<Integer> getAllTextSizes = new ArrayList<Integer>((Arrays.asList(100, 150, 200, 250)));
-    private ArrayList<String> selectedCategories = new ArrayList<String>();
+    private ArrayList<AlzTestCategoryAdapter.CategoryListItem> categoryPreferences = new ArrayList<AlzTestCategoryAdapter.CategoryListItem>();
     private int countdownTimerValue = 0;
 
     public AlzTestUserPrefs(){    }
@@ -74,23 +74,23 @@ public class AlzTestUserPrefs {
     }
 
 
-    public ArrayList<String> getSelectedCategories() {
-        return selectedCategories;
+    public ArrayList<AlzTestCategoryAdapter.CategoryListItem> getCategoryPreferences() {
+        return categoryPreferences;
     }
 
-    public void setSelectedCategories(ArrayList<String> selectedCategories) {
-        this.selectedCategories = selectedCategories;
+    public void setCategoryPreferences(ArrayList<AlzTestCategoryAdapter.CategoryListItem> categoryPreferences) {
+        this.categoryPreferences = categoryPreferences;
     }
 
-    public void addSelectedCategory(String s) {
-        if(!this.selectedCategories.contains(s));
-        this.selectedCategories.add(s);
+   /* public void addSelectedCategory(String s) {
+        if(!this.categoryPreferences.contains(s));
+        this.categoryPreferences.add(s);
     }
 
     public void removeSelectedCategory(String s) {
-        this.selectedCategories.remove(s);
+        this.categoryPreferences.remove(s);
     }
-
+    */
 
     public int getScroller() {
         return scroller;

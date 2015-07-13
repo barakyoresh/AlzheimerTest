@@ -9,6 +9,7 @@ import android.util.Log;
 import android.util.Pair;
 
 import com.alztest.alztest.OptionListActivity;
+import com.alztest.alztest.Prefrences.AlzTestCategoryAdapter;
 import com.alztest.alztest.Prefrences.AlzTestUserPrefs;
 import com.alztest.alztest.Stimuli.Stimulus;
 import com.alztest.alztest.Toolbox.AlzTestDatabaseManager;
@@ -69,15 +70,12 @@ public class AlzTestSessionFactory {
     }
 
     public ArrayList<Stimulus> removeRedundentCategories(AlzTestUserPrefs userPrefs, int stimuliSize) {
-        ArrayList<Stimulus> stimuliCopy = new ArrayList<Stimulus>(stimuli);
-        for(int i = stimuliSize - 1; i >= 0; i--) {
-            if((userPrefs.getSelectedCategories().contains(stimuliCopy.get(i).getCategory()))) {
-                if(userPrefs.getOperationSelection() == 0/*TODO: some hardcoded content right here, change to enum*/){
-                    stimuliCopy.remove(i);
-                }
-            } else {
-                if(userPrefs.getOperationSelection() == 1/*TODO: some hardcoded content right here, change to enum*/){
-                    stimuliCopy.remove(i);
+        ArrayList<Stimulus> stimuliCopy = new ArrayList<Stimulus>();
+        ArrayList<AlzTestCategoryAdapter.CategoryListItem> categories = userPrefs.getCategoryPreferences();
+        for(Stimulus s : stimuli) {
+            for(AlzTestCategoryAdapter.CategoryListItem category : categories) {
+                if(s.getCategory().equals(category.getCategory()) && category.isIncludeInSession()){
+                    stimuliCopy.add(s);
                 }
             }
         }

@@ -50,6 +50,7 @@ import java.util.ArrayList;
  * Created by Barak Yoresh on 11/02/2015.
  */
 public class AlzTestPrefrencesFragment extends Fragment {
+    private AlzTestCategoryAdapter categoryAdapter = null;
     private AlzTestPreferencesManager prefsManager = null;
     private AlzTestUserPrefs userPrefs = null;
     private View rootView;
@@ -409,45 +410,8 @@ public class AlzTestPrefrencesFragment extends Fragment {
         //categories
         final ArrayList<String> categories = ((OptionListActivity) getActivity()).getAllUniqueCategories();
         final ListView categorySelectionListView = (ListView) rootView.findViewById(R.id.categoryListView);
-        categorySelectionListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        categorySelectionListView.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_multiple_choice,
-                categories));
-        categorySelectionListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if((categorySelectionListView.isItemChecked(position))){
-                    userPrefs.addSelectedCategory(categories.get(position));
-                }else{
-                    userPrefs.removeSelectedCategory(categories.get(position));
-                }
-            }
-        });
-        for (String s : categories) {
-            if (userPrefs.getSelectedCategories().contains(s)) {
-                categorySelectionListView.setItemChecked(categories.indexOf(s), true);
-            }else{
-                categorySelectionListView.setItemChecked(categories.indexOf(s), false);
-            }
-        }
-
-        //operations
-        final ArrayList<String> operations = userPrefs.getAllOperations();
-        final Spinner operationSelectionSpinner = (Spinner) rootView.findViewById(R.id.operationSpinner);
-        operationSelectionSpinner.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item,
-                operations));
-        operationSelectionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                userPrefs.setOperationSelection(position);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        operationSelectionSpinner.setSelection(userPrefs.getOperationSelection());
+        categoryAdapter = new AlzTestCategoryAdapter(getActivity(), categories, userPrefs);
+        categorySelectionListView.setAdapter(categoryAdapter);
 
         //fix for android issue preventing a fully extended list view within a scrollable view
         setListViewHeightBasedOnChildren(categorySelectionListView);
@@ -476,6 +440,10 @@ public class AlzTestPrefrencesFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+        //update category preferences each pause
+        if(categoryAdapter != null && userPrefs != null) {
+            userPrefs.setCategoryPreferences(categoryAdapter.getCategoryListItems());
+        }
         prefsManager.setCachedPreferencesSet(userPrefs);
     }
 }
