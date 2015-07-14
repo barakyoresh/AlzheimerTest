@@ -17,6 +17,7 @@ import com.alztest.alztest.Toolbox.AlzTestDatabaseManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 
 /**
@@ -39,14 +40,22 @@ public class AlzTestSessionFactory {
         int numOfTrials = userPrefs.getNumberOfPairsInTrial(), stimuliSize = stimuli.size();
 
         //remove un-included categories
-        ArrayList<Stimulus> stimuliCopy = removeRedundentStimuli(userPrefs);
-        stimuliCopy = removeRedundentCategories(userPrefs, stimuliCopy);
+        ArrayList<Stimulus> stimuliCopy = removeRedundentStimuli(userPrefs); //specifically chosen stimuli
+        stimuliCopy = removeRedundentCategories(userPrefs, stimuliCopy); //specific categories
+
+        //shuffle data
         Collections.shuffle(stimuliCopy);
 
-        Stimulus firstStim;
+        //assmble pairs
+        ArrayList<Pair<Stimulus, Stimulus>> sessionData = assembleSessionPairs(userPrefs, numOfTrials, stimuliCopy);
 
+        //cluster resulting pairs by category
+        return clusterByCategory(sessionData, userPrefs);
+    }
+
+    public ArrayList<Pair<Stimulus, Stimulus>> assembleSessionPairs(AlzTestUserPrefs userPrefs, int numOfTrials, ArrayList<Stimulus> stimuliCopy) {
         ArrayList<Pair<Stimulus, Stimulus>> sessionData = new ArrayList<Pair<Stimulus, Stimulus>>();
-
+        Stimulus firstStim;
         for(int i = 0; i < numOfTrials; i++) {
             //extract first stimulus
             if(stimuliCopy.size() > 0) {
@@ -55,7 +64,7 @@ public class AlzTestSessionFactory {
                 Log.v(OptionListActivity.APPTAG, "not enough combinations, returning insufficient list");
                 break;
             }
-            //iterate untill a matching partner is found
+            //iterate until a matching partner is found
             for(Stimulus s : stimuliCopy) {
                 int diff = Math.abs(s.getValue() - firstStim.getValue());
                 if(s.getCategory().equals(firstStim.getCategory())
@@ -67,9 +76,7 @@ public class AlzTestSessionFactory {
                 }
             }
         }
-
-
-        return clusterByCategory(sessionData);
+        return sessionData;
     }
 
     /**
@@ -104,7 +111,7 @@ public class AlzTestSessionFactory {
         return stimuliCopy;
     }
 
-    public static ArrayList<ArrayList<Pair<Stimulus, Stimulus>>> clusterByCategory(ArrayList<Pair<Stimulus, Stimulus>> stimuliPairs) {
+    public static ArrayList<ArrayList<Pair<Stimulus, Stimulus>>> clusterByCategory(ArrayList<Pair<Stimulus, Stimulus>> stimuliPairs, final AlzTestUserPrefs userPrefs) {
         ArrayList<ArrayList<Pair<Stimulus, Stimulus>>> stimuliByCategory = new ArrayList<ArrayList<Pair<Stimulus, Stimulus>>>();
 
         for (Pair<Stimulus, Stimulus> s : stimuliPairs) {
@@ -125,6 +132,22 @@ public class AlzTestSessionFactory {
             }
         }
 
+        ArrayList<AlzTestCategoryAdapter.CategoryListItem> order = userPrefs.getCategoryPreferences();
+        final ArrayList<String> stringOrder = new ArrayList<String>();
+        for(AlzTestCategoryAdapter.CategoryListItem item : order) {
+            stringOrder.add(item.getCategory());
+        }
+
+        Collections.sort(stimuliByCategory, new Comparator<ArrayList<Pair<Stimulus, Stimulus>>>() {
+
+            @Override
+            public int compare(ArrayList<Pair<Stimulus, Stimulus>> lhs, ArrayList<Pair<Stimulus, Stimulus>> rhs) {
+                if(lhs.size() < 1 || lhs.get(0).first == null) { return -1; };
+                if(rhs.size() < 1 || rhs.get(0).first == null) { return 1; };
+
+                return stringOrder.indexOf(lhs.get(0).first.getCategory()) - stringOrder.indexOf(rhs.get(0).first.getCategory());
+            }
+        });
         return stimuliByCategory;
     }
 }

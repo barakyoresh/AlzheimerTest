@@ -32,16 +32,16 @@ public class EditDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle bundle = getArguments();
-        String stimuliName = "";
+        int stimuliHash = 0;
         if (bundle != null && bundle.containsKey(STIMULI_TO_EDIT)) {
-            Log.v(OptionListActivity.APPTAG, "got Stimuli name to Edit! + " + bundle.getString(STIMULI_TO_EDIT));
-            stimuliName = bundle.getString(STIMULI_TO_EDIT);
+            Log.v(OptionListActivity.APPTAG, "got Stimuli name to Edit! + " + bundle.getInt(STIMULI_TO_EDIT));
+            stimuliHash = bundle.getInt(STIMULI_TO_EDIT);
         }
-        final Dao<Stimulus, String> stimDao = AlzTestDatabaseManager.getInstance().getHelper().getStimuliDao();
+        final Dao<Stimulus, Integer> stimDao = AlzTestDatabaseManager.getInstance().getHelper().getStimuliDao();
         Stimulus s = null;
         try {
-            if (stimDao.idExists(stimuliName)) {
-                s = stimDao.queryForId(stimuliName);
+            if (stimDao.idExists(stimuliHash)) {
+                s = stimDao.queryForId(stimuliHash);
             }
         } catch (Exception e) {
             Log.v(OptionListActivity.APPTAG, "queryForId raised exception -");
@@ -74,7 +74,7 @@ public class EditDialog extends DialogFragment {
                 public void onClick(DialogInterface dialog, int which) {
                     String text = category.getText().toString();
                     boolean altered = false;
-                    String sID = null;
+                    int sID = -1;
                     try {
                         sID = stimDao.extractId(stimToAdd);
                     }catch(Exception e){
@@ -108,7 +108,7 @@ public class EditDialog extends DialogFragment {
                     try {
                         //if the data was changed
                         if(altered){
-                            if(sID != null){
+                            if(sID != -1){
                                 StimuliListFragment.sAdapter.updateEntry(sID, stimToAdd);
                             }
                         }

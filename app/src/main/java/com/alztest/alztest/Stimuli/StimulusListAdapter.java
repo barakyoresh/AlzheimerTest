@@ -54,16 +54,16 @@ public class StimulusListAdapter extends BaseAdapter {
     }
 
     /**
-     * Updates a list entry, if id is null, it adds the entry as a new one
+     * Updates a list entry, if id is -1, it adds the entry as a new one
      * @param id id of entry to alter
      * @param stimulus new entry to replace old one
      * @throws SQLException
      */
-    public void updateEntry(String id, Stimulus stimulus) throws SQLException{
+    public void updateEntry(int id, Stimulus stimulus) throws SQLException{
         //DB handle
-        Dao<Stimulus, String> stimDao = AlzTestDatabaseManager.getInstance().getHelper().getStimuliDao();
+        Dao<Stimulus, Integer> stimDao = AlzTestDatabaseManager.getInstance().getHelper().getStimuliDao();
 
-        if(id != null) {
+        if(id != -1) {
             //delete in db
             stimDao.deleteById(id);
 

@@ -86,7 +86,7 @@ public class StimuliListFragment extends Fragment{
         stimuliListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                openEditDialog(((Stimulus)sAdapter.getItem(position)).getName());
+                openEditDialog(((Stimulus)sAdapter.getItem(position)));
             }
         });
         return rootView;
@@ -217,12 +217,12 @@ public class StimuliListFragment extends Fragment{
         ud.show(getFragmentManager(), getString(R.string.clear_stimuli));
     }
 
-    private void openEditDialog(String stimulusName) {
+    private void openEditDialog(Stimulus s) {
         Log.v(OptionListActivity.APPTAG, "editing now");
         EditDialog ud = new EditDialog();
         Bundle bundle = new Bundle();
-        bundle.putString(EditDialog.STIMULI_TO_EDIT, stimulusName);
-        Log.v(OptionListActivity.APPTAG, "putting arg - " + stimulusName);
+        bundle.putInt(EditDialog.STIMULI_TO_EDIT, s.hashCode());
+        Log.v(OptionListActivity.APPTAG, "putting arg - " + s.hashCode());
         ud.setArguments(bundle);
         ud.show(getFragmentManager(), getString(R.string.edit_stimulus));
     }

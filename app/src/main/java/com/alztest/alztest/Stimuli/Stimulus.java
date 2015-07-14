@@ -15,6 +15,8 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "stimuli")
 public class Stimulus {
     @DatabaseField(id = true)
+    private int hashCode;
+    @DatabaseField
     private String name;
     @DatabaseField()
     private String category;
@@ -27,6 +29,7 @@ public class Stimulus {
         this.name = name;
         this.category = category;
         this.value = value;
+        hashCode = hashCode();
     }
 
     public int getValue() {
@@ -35,14 +38,14 @@ public class Stimulus {
 
     public void setValue(int value) {
         this.value = value;
+        hashCode = hashCode();
     }
 
-    public String getName() {
-        return name;
-    }
+    public String getName() {return name; }
 
     public void setName(String name) {
         this.name = name;
+        hashCode = hashCode();
     }
 
     public String getCategory() {
@@ -51,6 +54,7 @@ public class Stimulus {
 
     public void setCategory(String category) {
         this.category = category;
+        hashCode = hashCode();
     }
 
     @Override

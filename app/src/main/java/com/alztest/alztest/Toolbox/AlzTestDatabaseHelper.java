@@ -4,10 +4,6 @@
 
 package com.alztest.alztest.Toolbox;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -19,6 +15,10 @@ import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Barak Yoresh on 10/12/2014.
@@ -32,7 +32,7 @@ public class AlzTestDatabaseHelper extends OrmLiteSqliteOpenHelper{
         private static final int DATABASE_VERSION = 1;
 
         // the DAO object we use to access the SimpleData table
-        private Dao<Stimulus, String> StimuliDao = null;
+        private Dao<Stimulus, Integer> StimuliDao = null;
         private Dao<AlzTestSessionStatistics, Date> AlzTestSessionStatisticsDao = null;
 
 
@@ -74,7 +74,7 @@ public class AlzTestDatabaseHelper extends OrmLiteSqliteOpenHelper{
 
         }
 
-        public Dao<Stimulus, String> getStimuliDao() {
+        public Dao<Stimulus, Integer> getStimuliDao() {
             if (null == StimuliDao) {
                 try {
                     StimuliDao = getDao(Stimulus.class);

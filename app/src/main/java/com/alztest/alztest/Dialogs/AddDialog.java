@@ -53,7 +53,7 @@ public class AddDialog extends DialogFragment {
                 try {
                     int value = Integer.parseInt(valStr);
 
-                    StimuliListFragment.sAdapter.updateEntry(null, new Stimulus(nameStr, catStr, value));
+                    StimuliListFragment.sAdapter.updateEntry(-1, new Stimulus(nameStr, catStr, value));
                 }catch(Exception e)
                 {
                     //TODO: open invalid value dialog

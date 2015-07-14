@@ -70,7 +70,7 @@ public class StimuliBrain {
      * clears the data base from all entries
      */
     public static void clearDB() {
-        Dao<Stimulus, String> stimDao = AlzTestDatabaseManager.getInstance().getHelper().getStimuliDao();
+        Dao<Stimulus, Integer> stimDao = AlzTestDatabaseManager.getInstance().getHelper().getStimuliDao();
         try {
             stimDao.delete(stimDao.queryForAll());
         } catch (Exception e) {
