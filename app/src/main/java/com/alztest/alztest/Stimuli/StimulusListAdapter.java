@@ -30,7 +30,7 @@ enum SortCriteria{Category, Name, Value};
 
 public class StimulusListAdapter extends BaseAdapter {
     public ArrayList<Stimulus> stimuli = new ArrayList<Stimulus>();
-    private LayoutInflater inflater;
+    protected LayoutInflater inflater;
     private SortCriteria sortedBy = SortCriteria.Name;
     private boolean sortedAscending = true;
 

@@ -21,6 +21,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -34,9 +36,12 @@ import android.widget.Toast;
 
 import com.alztest.alztest.Dialogs.FileDialogCallback;
 import com.alztest.alztest.Dialogs.SaveDialog;
+import com.alztest.alztest.Dialogs.SpecificStimuliDialog;
 import com.alztest.alztest.Dialogs.UploadDialog;
 import com.alztest.alztest.OptionListActivity;
 import com.alztest.alztest.R;
+import com.alztest.alztest.Stimuli.Stimulus;
+import com.alztest.alztest.Toolbox.AlzTestDatabaseManager;
 import com.alztest.alztest.Toolbox.AlzTestPreferencesManager;
 import com.alztest.alztest.Toolbox.SerializeManager;
 
@@ -44,6 +49,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
@@ -89,8 +95,47 @@ public class AlzTestPrefrencesFragment extends Fragment {
         //size of stimuli text
         setupSessionTextSizeWidget();
 
+        //specific stimuli subset
+        setupSpecificStimuliSubsetWidget();
+
         // dummy widgets
         setupDummyWidgets();
+    }
+
+    private void setupSpecificStimuliSubsetWidget() {
+        final Button chooseButton = (Button) rootView.findViewById(R.id.chooseSpecificStimuliButton);
+        final CheckBox enableSpecificChoiceCheckbox = (CheckBox) rootView.findViewById(R.id.specifiStimuliSubsetCheckBox);
+
+        //checkbox
+        enableSpecificChoiceCheckbox.setChecked(userPrefs.isUsingSpecificStimuliSubset());
+        enableSpecificChoiceCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                userPrefs.setUsingSpecificStimuliSubset(isChecked);
+            }
+        });
+
+        //button
+        chooseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<Stimulus> stimuli = null;
+                try {
+                    stimuli = (ArrayList<Stimulus>) AlzTestDatabaseManager.getInstance().getHelper().getStimuliDao().queryForAll();
+                } catch (SQLException e) {
+                    Log.e(OptionListActivity.APPTAG, "SQL Error:" + e.getErrorCode());
+
+                    stimuli = null;
+                }
+                if(stimuli != null) {
+                    SpecificStimuliDialog ssd = new SpecificStimuliDialog();
+                    ssd.setUserPrefs(userPrefs);
+                    ssd.show(getFragmentManager(), "Specific Stimuli Dialog");
+                } else {
+                    Toast.makeText(getActivity(), "Database error, can't access stimuli :(", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     private void setupSessionCountdownWidget() {

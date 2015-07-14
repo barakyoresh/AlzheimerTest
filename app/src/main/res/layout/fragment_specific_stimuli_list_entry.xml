@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2015. Barak Yoresh. all rights reserved.
+  -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="0dip"
+        android:layout_weight="1"
+        android:textSize="18sp"
+        android:layout_margin="5dp"
+        android:text="@string/legend_category"
+        android:id="@+id/list_entry_stimulus_category"/>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="fill_parent"
+        android:background="@android:color/darker_gray"/>
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="0dip"
+        android:layout_weight="1"
+        android:textSize="18sp"
+        android:layout_margin="5dp"
+        android:text="@string/legend_name"
+        android:id="@+id/list_entry_stimulus_name"/>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="fill_parent"
+        android:background="@android:color/darker_gray"/>
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="0dip"
+        android:layout_weight="1"
+        android:textSize="18sp"
+        android:layout_margin="5dp"
+        android:text="@string/legend_value"
+        android:id="@+id/list_entry_stimulus_value"/>
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:id="@+id/specificListEntryCheckbox"
+        />
+</LinearLayout>

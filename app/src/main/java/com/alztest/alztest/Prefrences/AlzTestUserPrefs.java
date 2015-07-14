@@ -6,6 +6,7 @@ package com.alztest.alztest.Prefrences;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 
@@ -29,6 +30,26 @@ public class AlzTestUserPrefs {
     private static ArrayList<Integer> getAllTextSizes = new ArrayList<Integer>((Arrays.asList(100, 150, 200, 250)));
     private ArrayList<AlzTestCategoryAdapter.CategoryListItem> categoryPreferences = new ArrayList<AlzTestCategoryAdapter.CategoryListItem>();
     private int countdownTimerValue = 0;
+    private boolean usingSpecificStimuliSubset = false;
+    private HashSet<Integer> specificStimuliSubsetIndecies = new HashSet<Integer>();
+
+    public HashSet<Integer> getSpecificStimuliSubsetIndecies() {
+        return specificStimuliSubsetIndecies;
+    }
+
+    public void setSpecificStimuliSubsetIndecies(HashSet<Integer> specificStimuliSubsetIndecies) {
+        this.specificStimuliSubsetIndecies = specificStimuliSubsetIndecies;
+    }
+
+    public boolean isUsingSpecificStimuliSubset() {
+        return usingSpecificStimuliSubset;
+    }
+
+    public void setUsingSpecificStimuliSubset(boolean usingSpecificStimuliSubset) {
+        this.usingSpecificStimuliSubset = usingSpecificStimuliSubset;
+    }
+
+
 
     public AlzTestUserPrefs(){    }
 
@@ -81,16 +102,6 @@ public class AlzTestUserPrefs {
     public void setCategoryPreferences(ArrayList<AlzTestCategoryAdapter.CategoryListItem> categoryPreferences) {
         this.categoryPreferences = categoryPreferences;
     }
-
-   /* public void addSelectedCategory(String s) {
-        if(!this.categoryPreferences.contains(s));
-        this.categoryPreferences.add(s);
-    }
-
-    public void removeSelectedCategory(String s) {
-        this.categoryPreferences.remove(s);
-    }
-    */
 
     public int getScroller() {
         return scroller;

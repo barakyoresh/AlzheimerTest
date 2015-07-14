@@ -17,6 +17,7 @@ import com.alztest.alztest.Toolbox.AlzTestDatabaseManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 
 /**
  * Created by Barak Yoresh on 05/04/2015.
@@ -33,11 +34,13 @@ public class AlzTestSessionFactory {
             e.printStackTrace();
         }
     }
+
     public ArrayList<ArrayList<Pair<Stimulus, Stimulus>>> buildSessionData(AlzTestUserPrefs userPrefs) {
         int numOfTrials = userPrefs.getNumberOfPairsInTrial(), stimuliSize = stimuli.size();
 
         //remove un-included categories
-        ArrayList<Stimulus> stimuliCopy = removeRedundentCategories(userPrefs, stimuliSize);
+        ArrayList<Stimulus> stimuliCopy = removeRedundentStimuli(userPrefs);
+        stimuliCopy = removeRedundentCategories(userPrefs, stimuliCopy);
         Collections.shuffle(stimuliCopy);
 
         Stimulus firstStim;
@@ -69,7 +72,26 @@ public class AlzTestSessionFactory {
         return clusterByCategory(sessionData);
     }
 
-    public ArrayList<Stimulus> removeRedundentCategories(AlzTestUserPrefs userPrefs, int stimuliSize) {
+    /**
+     * Removes all unincluded stimuli when selected with specific subset
+     */
+    private ArrayList<Stimulus> removeRedundentStimuli(AlzTestUserPrefs userPrefs) {
+        if (!userPrefs.isUsingSpecificStimuliSubset()) {
+            return stimuli;
+        }
+
+        ArrayList<Stimulus> stimuliCopy = new ArrayList<Stimulus>();
+        HashSet<Integer> specificSubset = userPrefs.getSpecificStimuliSubsetIndecies();
+        for(Stimulus s : stimuli) {
+            if(specificSubset.contains(s.hashCode())) {
+                stimuliCopy.add(s);
+            }
+        }
+
+        return stimuliCopy;
+    }
+
+    public ArrayList<Stimulus> removeRedundentCategories(AlzTestUserPrefs userPrefs, ArrayList<Stimulus> stimuli) {
         ArrayList<Stimulus> stimuliCopy = new ArrayList<Stimulus>();
         ArrayList<AlzTestCategoryAdapter.CategoryListItem> categories = userPrefs.getCategoryPreferences();
         for(Stimulus s : stimuli) {

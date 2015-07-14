@@ -4,8 +4,6 @@
 
 package com.alztest.alztest.Stimuli;
 
-import com.alztest.alztest.Toolbox.AlzTestDatabaseManager;
-import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -58,5 +56,14 @@ public class Stimulus {
     @Override
     public String toString(){
         return (this.name + ", " + this.category + ", " + this.value);
+    }
+    
+    @Override
+    public int hashCode(){
+        int hash = 7;
+        hash = 71 * hash + this.name.hashCode();
+        hash = 71 * hash + this.category.hashCode();
+        hash = 71 * hash + this.value;
+        return hash;
     }
 }
