@@ -4,10 +4,11 @@
 
 package com.alztest.alztest.Prefrences;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.alztest.alztest.OptionListActivity;
@@ -26,6 +28,9 @@ import java.util.ArrayList;
  * Created by user on 13/07/2015.
  */
 public class AlzTestCategoryAdapter extends BaseAdapter {
+    public static final int ABS_DELTA_Y_REQUIRED_FOR_SWAP = 40;
+    public static final String HOLO_LIGHT_BLUE = "#33b5e5";
+    public static final String TRANSPERANT_GRAY = "#00eeeeee";
     private ArrayList<String> categories;
     private ArrayList<CategoryListItem> categoryListItems;
     private AlzTestUserPrefs userPrefs;
@@ -95,7 +100,7 @@ public class AlzTestCategoryAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, final ViewGroup parent) {
         if( convertView == null ){
             convertView = inflater.inflate(R.layout.fragment_category_list_entry, parent, false);
         }
@@ -122,10 +127,6 @@ public class AlzTestCategoryAdapter extends BaseAdapter {
         });
 
 
-        final GestureDetector.SimpleOnGestureListener g = new GestureDetector.SimpleOnGestureListener();
-
-
-
         //on touch events, if this view was long pressed, if the event is movment, swap it with the
         //entry in the direction of the movment. eventually this will be a propper sorting inteface.
         //but for now this will do
@@ -133,6 +134,7 @@ public class AlzTestCategoryAdapter extends BaseAdapter {
             float y = 0;
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                v.getParent().requestDisallowInterceptTouchEvent(true);
 
 
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -140,16 +142,30 @@ public class AlzTestCategoryAdapter extends BaseAdapter {
                     Log.v(OptionListActivity.APPTAG, "y=" + y);
                 }
                 if(categoryListItems.get(pos).isLongPressed) {
-                    v.getParent().requestDisallowInterceptTouchEvent(true);
 
-                    v.setBackgroundColor(v.getContext().getResources().getColor(android.R.color.transparent));
+
+
 
                     if (event.getAction() == MotionEvent.ACTION_MOVE) {
                         float deltaY = y - event.getY();
                         Log.v(OptionListActivity.APPTAG, "deltaY=" + deltaY);
-                        categoryListItems.get(pos).isLongPressed = false;
 
-                        swap(pos, pos + (deltaY < 0 ? 1 : -1));
+                        if(Math.abs(deltaY) > ABS_DELTA_Y_REQUIRED_FOR_SWAP) {
+                            categoryListItems.get(pos).isLongPressed = false;
+                            swap(pos, pos + (deltaY < 0 ? 1 : -1));
+
+                            //adjust colors
+                            v.setBackgroundColor(v.getContext().getResources().getColor(android.R.color.transparent));
+                            View swapee = ((ListView)v.getParent()).getChildAt(mod(pos + (deltaY < 0 ? 1 : -1), categoryListItems.size()));
+                            swapee.setBackgroundColor(Color.parseColor(HOLO_LIGHT_BLUE));
+                            animateColorChange(swapee, Color.parseColor(HOLO_LIGHT_BLUE), Color.parseColor(TRANSPERANT_GRAY));
+                        }
+                    }
+
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                        Log.v(OptionListActivity.APPTAG, "action up");
+                        categoryListItems.get(pos).isLongPressed = false;
+                        v.setBackgroundColor(v.getContext().getResources().getColor(android.R.color.transparent));
                     }
                 }
 
@@ -161,7 +177,7 @@ public class AlzTestCategoryAdapter extends BaseAdapter {
         convertView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                v.setBackgroundColor(Color.parseColor("#33b5e5"));
+                v.setBackgroundColor(Color.parseColor(HOLO_LIGHT_BLUE));
                 categoryListItems.get(pos).isLongPressed = true;
                 return true;
 
@@ -169,6 +185,24 @@ public class AlzTestCategoryAdapter extends BaseAdapter {
         });
 
         return convertView;
+    }
+
+    private static void animateColorChange(final View v, int colorFrom, int colorTo){
+        ObjectAnimator animator = ObjectAnimator.ofInt(v, "backgroundColor", colorFrom, colorTo).setDuration(300);
+        animator.setEvaluator(new ArgbEvaluator());
+        animator.start();
+        /*
+        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+        colorAnimation.setEvaluator(new ArgbEvaluator());
+        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+            @Override
+            public void onAnimationUpdate(ValueAnimator animator) {
+                v.setBackgroundColor((Integer) animator.getAnimatedValue());
+            }
+
+        });
+        colorAnimation.start();*/
     }
 
     /**
