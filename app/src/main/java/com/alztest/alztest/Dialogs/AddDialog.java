@@ -37,13 +37,13 @@ public class AddDialog extends DialogFragment {
         final EditText name = (EditText) dialogView.findViewById(R.id.editTextName);
         final EditText value = (EditText) dialogView.findViewById(R.id.editTextValue);
         builder.setView(dialogView);
-        builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 return;
             }
         });
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.Okay, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String catStr = category.getText().toString();

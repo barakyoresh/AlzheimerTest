@@ -25,7 +25,7 @@ import com.alztest.alztest.R;
 import java.util.ArrayList;
 
 /**
- * Created by user on 13/07/2015.
+ * Created by Baral Yoresh on 13/07/2015.
  */
 public class AlzTestCategoryAdapter extends BaseAdapter {
     public static final int ABS_DELTA_Y_REQUIRED_FOR_SWAP = 40;
@@ -271,7 +271,7 @@ public class AlzTestCategoryAdapter extends BaseAdapter {
             this.category = category;
         }
 
-        boolean includeInAnalysis;
+        boolean includeInAnalysis = true;
         String category = "categoryName";
     }
 

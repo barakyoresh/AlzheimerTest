@@ -13,6 +13,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,6 +44,7 @@ public class SessionActivity extends Activity {
     private AlzTestUserPrefs userPrefs;
     private long stimuliStartTime;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,11 +52,6 @@ public class SessionActivity extends Activity {
 
         leftStimulus = (TextView) findViewById(R.id.leftStimulus);
         rightStimulus = (TextView) findViewById(R.id.rightStimulus);
-
-        //hide keyboard
-        //InputMethodManager imm = (InputMethodManager) this.getSystemService(
-         //       Context.INPUT_METHOD_SERVICE);
-        //imm.toggleSoftInput(InputMethodManager.HIDE_NOT_ALWAYS, 0);
 
 
         //load last userPrefs
@@ -79,9 +76,6 @@ public class SessionActivity extends Activity {
             sessionStimuliPairs = null;
         }
 
-       /* for (Pair<Stimulus, Stimulus> p : sessionStimuliPairs){
-            Log.v(OptionListActivity.APPTAG, p.first.getName() + " : " + p.second.getName());
-       }*/
 
         //init stats
         sessionStatistics = new AlzTestSessionStatistics(this.getIntent().getStringExtra(NewSessionFragment.SUBJECT_NAME),
@@ -91,9 +85,7 @@ public class SessionActivity extends Activity {
         sessionStatistics.setMMSETotal(this.getIntent().getIntExtra(NewSessionFragment.MMSE_TOTAL, -1));
 
 
-
-
-
+        //click handlers
         findViewById(R.id.leftLayout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -109,42 +101,120 @@ public class SessionActivity extends Activity {
             }
         });
 
+        //start session
         if(sessionStimuliPairs != null && sessionStimuliPairs.size() > 0) {
-            invokeCountdown(this, "New Session, Category: " + sessionStimuliPairs.get(0).first.getCategory());
+            invokeCountdown(this, "New Session, Category: " + sessionStimuliPairs.get(0).first.getCategory(), new CountdownCallback() {
+                @Override
+                public void onTimerExceeded() {
+                    stimulusSwap();
+                }
+            }, userPrefs.getCountdownTimerValue());
         }else{
-            //TODO: when implementing pause on back, make sure empty sessions still work fine
             Toast.makeText(this, "Insufficient Stimuli for session", Toast.LENGTH_SHORT).show();
-            onBackPressed();
+            superOnBackPressed();
         }
    }
 
-    private void invokeCountdown(Activity activity, String title) {
-        int timeInSeconds = userPrefs.getCountdownTimerValue();
+    @Override
+    public void onBackPressed() {
+        Log.v(OptionListActivity.APPTAG, "back pressed, showing pause screen");
+
+        //build "pause" dialog
+        final SessionActivity activity = this;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure you want to exit session?\nAll session data will be lost.")
+                .setTitle("Session Paused")
+                .setPositiveButton("I am sure", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.v(OptionListActivity.APPTAG, "back confirmed. exiting");
+                        activity.superOnBackPressed();
+                    }
+                })
+                .setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog dialog = builder.create();
+        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                Log.v(OptionListActivity.APPTAG, "back canceled. resuming");
+                invokeCountdown(activity, "Resuming Session... " +
+                                (sessionStimuliPairs.size() > 0 ? sessionStimuliPairs.get(0).first.getCategory() : ""), //state category if possible
+                        new CountdownCallback() {
+
+                            @Override
+                            public void onTimerExceeded() {
+                                Log.v(OptionListActivity.APPTAG, "reseting response time");
+
+                                if(stimuliStartTime != 0) { //reset response time
+                                    stimuliStartTime = System.nanoTime();
+                                } else {                    //if response time wasn't initiated, this is the first pair
+                                    stimulusSwap();
+                                }
+
+                            }
+                        }, 3);
+            }
+        });
+        dialog.show();
+    }
+
+    /**
+     * This is necessary in order to avoid violating encapsulation.
+     * This is the rare case where we don't want polymorphism.
+     */
+    public void superOnBackPressed() {
+        super.onBackPressed();
+    }
+
+    /**
+     * callback interface for countdown timer
+     */
+    private interface CountdownCallback{
+        //method called at end of timer or on confirmation click
+        public void onTimerExceeded();
+    }
+
+
+    private void invokeCountdown(Activity activity, String title, final CountdownCallback callback, int timeInSeconds) {
+        if (timeInSeconds < 0) { timeInSeconds = 0; }
+        if (timeInSeconds > 10) { timeInSeconds = 10; }
         //TODO: put stuff in finals. magic numbers!
         if(timeInSeconds > 0) {
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setTitle(title);
 
             LayoutInflater inflater = activity.getLayoutInflater();
-            builder.setMessage("Starting in " + timeInSeconds + "...");
-            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            builder.setMessage("Starting in " + timeInSeconds + "...")
+                    .setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    })
+                    .setPositiveButton("Start", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            callback.onTimerExceeded();
+                            return;
+                        }
+                    });
+
+            final AlertDialog dialog = builder.create();
+            dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int which) {
+                public void onCancel(DialogInterface dialog) {
                     onBackPressed();
                     return;
                 }
             });
-            builder.setPositiveButton("Start", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    stimulusSwap();
-                    return;
-                }
-            });
 
-            final AlertDialog dialog = builder.create();
-
-            //TODO: why 500? somehow 1000 skips one...
+            //500 is because exactly 1000 skips a second.
             CountDownTimer timer = new CountDownTimer(TimeUnit.MILLISECONDS.convert(timeInSeconds, TimeUnit.SECONDS), 500) {
                 @Override
                 public void onTick(long millisUntilFinished) {
@@ -185,13 +255,17 @@ public class SessionActivity extends Activity {
         if (sessionStimuliPairsByCategory.size() > 0) {
             //proceed to next category
             sessionStimuliPairs = sessionStimuliPairsByCategory.remove(0);
-            invokeCountdown(this, "Continue session, Category: " + sessionStimuliPairs.get(0).first.getCategory());
+            invokeCountdown(this, "Continue session, Category: " + sessionStimuliPairs.get(0).first.getCategory(), new CountdownCallback() {
+                @Override
+                public void onTimerExceeded() {
+                    stimulusSwap();
+                }
+            }, userPrefs.getCountdownTimerValue());
         }else{
             //finish session
             sessionStatistics.setSessionEndTime(new Date());
-
+            sessionStatistics.setCategoryPreferences(userPrefs.getCategoryPreferences());
             Toast toast;
-
             try {
                 AlzTestDatabaseManager.getInstance().getHelper().getAlzTestSessionStatisticsDao().create(sessionStatistics);
                 toast =  Toast.makeText(this, "Information saved to database", Toast.LENGTH_SHORT);
@@ -202,9 +276,8 @@ public class SessionActivity extends Activity {
             }
 
             StatisticsListFragment.upDateListFromDB();
-
             toast.show();
-            onBackPressed();
+            superOnBackPressed();
         }
     }
 
@@ -217,4 +290,17 @@ public class SessionActivity extends Activity {
         stimulusSwap();
     }
 
+    /**
+     * Overriding home button to do back action
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 }

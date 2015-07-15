@@ -98,7 +98,7 @@ public class UploadDialog extends DialogFragment {
             Log.v(OptionListActivity.APPTAG, "Showing file picker before loading the file list");
             return builder.create();
         }
-        builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 

@@ -63,13 +63,13 @@ public class EditDialog extends DialogFragment {
             final Stimulus stimToAdd = s;  //workarround for button-access
             builder.setView(dialogView);
 
-            builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            builder.setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     return;
                 }
             });
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(R.string.Okay, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     String text = category.getText().toString();

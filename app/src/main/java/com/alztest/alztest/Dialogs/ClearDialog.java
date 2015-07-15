@@ -10,6 +10,7 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
+import com.alztest.alztest.R;
 import com.alztest.alztest.Stimuli.StimuliBrain;
 import com.alztest.alztest.Stimuli.StimuliListFragment;
 
@@ -22,7 +23,7 @@ public class ClearDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Are You sure you want to delete all stimuli?");
         builder.setMessage("This operation cannot be undone.");
-        builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 return;

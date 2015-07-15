@@ -41,6 +41,10 @@
     <string name="MMSEScoresHeader">Mini-Mental State Examination (MMSE) Score</string>
     <string name="sessionTextSizeHeader">Session Stimuli Text Size</string>
     <string name="SpecificStimuliSubsetHeader">Specific Stimuli Subset</string>
+    <string name="Cancel">Cancel</string>
+    <string name="Okay">Okay</string>
+    <string name="SessionStatsHeader">Session Stats</string>
+    <string name="action_send_statistics_via_email">Send Statistics via Email</string>
 
 
 </resources>

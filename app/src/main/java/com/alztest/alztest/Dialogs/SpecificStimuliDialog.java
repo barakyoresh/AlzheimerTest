@@ -15,6 +15,7 @@ import android.widget.ListView;
 import com.alztest.alztest.OptionListActivity;
 import com.alztest.alztest.Prefrences.AlzTestUserPrefs;
 import com.alztest.alztest.Prefrences.SpecificStimulusListAdapter;
+import com.alztest.alztest.R;
 
 import java.util.HashSet;
 
@@ -43,7 +44,7 @@ public class SpecificStimuliDialog extends DialogFragment {
                 // and the listener through which to receive callbacks when items are selected
                 .setView(ls)
                         // Set the action buttons
-                .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.Okay, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         // User clicked OK, so save the mSelectedItems results somewhere
@@ -51,7 +52,7 @@ public class SpecificStimuliDialog extends DialogFragment {
                         userPrefs.setSpecificStimuliSubsetIndecies(stimulusAdapter.getSelected());
                     }
                 })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) { }
                 });

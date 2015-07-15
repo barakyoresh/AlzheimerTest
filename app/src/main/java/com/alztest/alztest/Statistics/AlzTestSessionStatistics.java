@@ -7,6 +7,7 @@ package com.alztest.alztest.Statistics;
 import android.util.Log;
 
 import com.alztest.alztest.OptionListActivity;
+import com.alztest.alztest.Prefrences.AlzTestCategoryAdapter;
 import com.alztest.alztest.Session.AlzTestSingleClickStats;
 import com.alztest.alztest.Toolbox.AlzTestSerializeManager;
 import com.j256.ormlite.field.DataType;
@@ -41,6 +42,8 @@ public class AlzTestSessionStatistics {
     public int MMSETotal;
     @DatabaseField(dataType = DataType.SERIALIZABLE)
     private ArrayList<String> statistics;
+    @DatabaseField(dataType = DataType.SERIALIZABLE)
+    private ArrayList<String> categoryPreferences;
 
     public AlzTestSessionStatistics(){}
 
@@ -141,7 +144,6 @@ public class AlzTestSessionStatistics {
     public ArrayList<AlzTestSingleClickStats> getStatistics() {
         ArrayList<AlzTestSingleClickStats> DeserializedStatistics = new ArrayList<AlzTestSingleClickStats>();
         for(String clickStatsJson : this.statistics) {
-            //TODO: add cast safety
             DeserializedStatistics.add((AlzTestSingleClickStats)AlzTestSerializeManager.deSerialize(clickStatsJson, AlzTestSingleClickStats.class));
         }
         return DeserializedStatistics;
@@ -172,4 +174,22 @@ public class AlzTestSessionStatistics {
         }
         return correct;
     }
+
+
+    public ArrayList<AlzTestCategoryAdapter.CategoryListItem> getCategoryPreferences() {
+        ArrayList<AlzTestCategoryAdapter.CategoryListItem> DeserializedCategoryPreferences = new ArrayList<AlzTestCategoryAdapter.CategoryListItem>();
+        for(String clickStatsJson : this.categoryPreferences) {
+            DeserializedCategoryPreferences.add((AlzTestCategoryAdapter.CategoryListItem)AlzTestSerializeManager.deSerialize(clickStatsJson, AlzTestCategoryAdapter.CategoryListItem.class));
+        }
+        return DeserializedCategoryPreferences;
+    }
+
+    public void setCategoryPreferences(ArrayList<AlzTestCategoryAdapter.CategoryListItem> categoryPreferences) {
+        ArrayList<String> jsonCategoryPreferences = new ArrayList<String>();
+        for(AlzTestCategoryAdapter.CategoryListItem category : categoryPreferences) {
+            jsonCategoryPreferences.add(AlzTestSerializeManager.serialize(category));
+        }
+        this.categoryPreferences = jsonCategoryPreferences;
+    }
+
 }
