@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alztest.alztest.OptionListActivity;
 import com.alztest.alztest.R;
@@ -29,6 +30,12 @@ import java.io.FilenameFilter;
  */
 public class SaveDialog extends DialogFragment {
 
+    /**
+     * While working like a charm, this dialog and the other file-related dialog have quite
+     * a few code duplications and are in general not well designed, in the sence that they could
+     * have been more generic, and not so specific to the problem at hand
+     */
+
     public static final String ALTERNATIVE_PATH = "alternative_path";
     public static final String FILE_NAME = "file_name";
     public static String defaultFileName = "untitled";
@@ -39,7 +46,7 @@ public class SaveDialog extends DialogFragment {
     private static final String FTYPE1 = ".xls";
     private static final String FTYPE2 = ".xlsx";
     private static final String TAG = "SaveDialog";
-    private static final String ELIPSIS = "\\...";
+    private static final String ELIPSIS = "\\..";
     private FileDialogCallback callback = null;
     private EditText input;
     private String fileName = "";
@@ -108,8 +115,8 @@ public class SaveDialog extends DialogFragment {
         }
         Log.v(OptionListActivity.APPTAG, "creating dialog with path - " + mPath.getPath());
         loadFileList();
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Choose Folder");
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(mPath.getAbsolutePath());
         if(mFileList == null) {
             Log.e(TAG, "Showing file picker before loading the file list");
             Log.v(OptionListActivity.APPTAG, "Showing file picker before loading the file list");
@@ -121,12 +128,11 @@ public class SaveDialog extends DialogFragment {
 
             }
         });
-        //TODO: add mkdir button
         //MKDIR button
         builder.setNeutralButton("Create Directory", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
+                //this method is overriden and never called
             }
         });
         //Save button
@@ -139,7 +145,7 @@ public class SaveDialog extends DialogFragment {
                     callback.onChooseFile(getActivity(), f);
                 } else {
                     //TODO: promt override dialog
-                    Log.v(OptionListActivity.APPTAG, "Overrideing");
+                    Log.v(OptionListActivity.APPTAG, "Overriding");
                     callback.onChooseFile(getActivity(), f);
                 }
             }
@@ -151,16 +157,7 @@ public class SaveDialog extends DialogFragment {
                 File sel = new File(mPath, mChosenFile);
                 //directory
                 if (sel.isDirectory()) {
-                    Log.v(OptionListActivity.APPTAG, "Directory!");
-                    SaveDialog sd = new SaveDialog();
-                    sd.setCallback(callback);
-                    Bundle bundle = new Bundle();
-                    bundle.putString(ALTERNATIVE_PATH, sel.getPath());
-                    Log.v(OptionListActivity.APPTAG, "putting arg - " + sel.getPath());
-                    bundle.putString(FILE_NAME, fileName);
-                    sd.extensionType = extensionType;
-                    sd.setArguments(bundle);
-                    sd.show(getFragmentManager(), getString(R.string.save_stimuli));
+                    openDirectory(sel);
                 }
                 //file or Elipsis
                 else {
@@ -197,15 +194,91 @@ public class SaveDialog extends DialogFragment {
             }
         });
         builder.setView(getInputView());
+        final Dialog d = builder.create();
 
-        return builder.create();
+        //override neutral button so pressing it won't dismiss dialog
+        d.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                ((AlertDialog) dialog).getButton(DialogInterface.BUTTON_NEUTRAL).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.v(OptionListActivity.APPTAG, "Neutral button pressed override");
+                        AlertDialog.Builder dirBuilder = new AlertDialog.Builder(getActivity());
+                        final EditText dirNameEditText = new EditText(getActivity());
+                        dirNameEditText.setHint("New Directory");
+                        dirBuilder.setView(dirNameEditText)
+                                .setTitle("Create a new directory")
+                                .setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                    }
+                                })
+                                .setPositiveButton(R.string.Okay, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        //get file name
+                                        String dirName = dirNameEditText.getText().toString();
+                                        if (dirName.equals("")) { dirName = (String) dirNameEditText.getHint(); }
+
+                                        //make sure its valid
+                                        if (!validFileName(dirName)) {
+                                            Log.v(OptionListActivity.APPTAG, "illegal file name, canceling");
+                                            Toast.makeText(getActivity(), "Invalid directory name", Toast.LENGTH_SHORT).show();
+                                            return;
+                                        }
+
+                                        File f = new File(mPath, dirName);
+
+                                        //make sure file doesn't exist
+                                        if(f.exists()) {
+                                            Log.v(OptionListActivity.APPTAG, "Path exists, canceling");
+                                            Toast.makeText(getActivity(), "Directory already exists", Toast.LENGTH_SHORT).show();
+                                            return;
+                                        }
+
+                                        //attempt creating
+                                        boolean success = f.mkdirs();
+                                        if(!success) {
+                                            Log.v(OptionListActivity.APPTAG, "file creation failed, canceling");
+                                            Toast.makeText(getActivity(), "Failed creating directory", Toast.LENGTH_SHORT).show();
+
+                                            return;
+                                        }
+
+                                        //dismiss and open dir
+                                        d.dismiss();
+                                        openDirectory(f);
+                                    }
+                                });
+                        dirBuilder.create().show();
+                    }
+                });
+            }
+        });
+
+        return d;
     }
 
     private boolean validFileName(String fileName) {
         //TODO: more advanced protection
-        return fileName.length() > 0;
+        if (fileName.length() <= 0) return false;
+        return true;
     }
 
+    private void openDirectory(File sel) {
+        Log.v(OptionListActivity.APPTAG, "Directory!");
+        SaveDialog sd = new SaveDialog();
+        sd.setCallback(callback);
+        Bundle bundle = new Bundle();
+        bundle.putString(ALTERNATIVE_PATH, sel.getPath());
+        Log.v(OptionListActivity.APPTAG, "putting arg - " + sel.getPath());
+        bundle.putString(FILE_NAME, fileName);
+        sd.extensionType = extensionType;
+        sd.setArguments(bundle);
+        sd.show(getFragmentManager(), getString(R.string.save_stimuli));
+    }
 
     private View getInputView() {
         input = new EditText(getActivity());

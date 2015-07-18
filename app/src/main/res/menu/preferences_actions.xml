@@ -7,10 +7,9 @@
       xmlns:AlzTest="http://schemas.android.com/apk/res-auto" >
     <item android:id="@+id/action_save_preferences"
         android:icon="@drawable/ic_action_save"
-        android:title="@string/action_save_preferences"
-        android:showAsAction="collapseActionView|ifRoom" />
+        android:title="@string/action_save_preferences" />
     <item android:id="@+id/action_open_preferences"
         android:icon="@drawable/ic_action_upload"
         android:title="@string/action_load_preferences"
-        android:showAsAction="collapseActionView|ifRoom"/>
+       />
 </menu>

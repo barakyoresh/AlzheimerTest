@@ -16,8 +16,8 @@
     <string name="legend_category">Category</string>
     <string name="legend_name">Name</string>
     <string name="legend_value">Value</string>
-    <string name="action_load_preferences">Load Saved Preferences</string>
-    <string name="action_save_preferences">Save Preferences</string>
+    <string name="action_load_preferences">Load Saved Preferences From File</string>
+    <string name="action_save_preferences">Save Preferences To File</string>
     <string name="numberOfStimuliTooltip">Number of stimuli pairs to display in trial:</string>
     <string name="numberOfStimuliHeader">Number Of Stimuli</string>
     <string name="maxValDiffTooltip">Maximum Value Difference (inclusive):</string>

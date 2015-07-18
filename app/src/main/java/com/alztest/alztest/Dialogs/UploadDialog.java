@@ -23,6 +23,13 @@ import java.io.FilenameFilter;
  */
 public class UploadDialog extends DialogFragment {
 
+    /**
+     * While working like a charm, this dialog and the other file-related dialog have quite
+     * a few code duplications and are in general not well designed, in the sence that they could
+     * have been more generic, and not so specific to the problem at hand
+      */
+
+
     public static final String ALTERNATIVE_PATH = "alternative_path";
     private String[] mFileList;
     private static final File basePath = Environment.getExternalStorageDirectory();
@@ -31,7 +38,7 @@ public class UploadDialog extends DialogFragment {
     private static final String FTYPE1 = ".xls";
     private static final String FTYPE2 = ".xlsx";
     private static final String TAG = "UploadDialog";
-    private static final String ELIPSIS = "\\...";
+    private static final String ELIPSIS = "\\..";
     private FileDialogCallback callback = null;
     public String extensionType = "xls";
 

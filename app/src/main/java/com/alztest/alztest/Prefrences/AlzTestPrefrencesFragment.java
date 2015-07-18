@@ -28,9 +28,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SeekBar;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -98,8 +96,6 @@ public class AlzTestPrefrencesFragment extends Fragment {
         //specific stimuli subset
         setupSpecificStimuliSubsetWidget();
 
-        // dummy widgets
-        setupDummyWidgets();
     }
 
     private void setupSpecificStimuliSubsetWidget() {
@@ -212,41 +208,6 @@ public class AlzTestPrefrencesFragment extends Fragment {
             }
         });
         builder.create().show();
-    }
-
-    private void setupDummyWidgets() {
-        //seekbar
-        SeekBar sb = (SeekBar) rootView.findViewById(R.id.seekBar);
-        sb.setMax(3);
-        sb.setProgress(userPrefs.getScroller());
-
-        sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            private int myProgress = 0;
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                myProgress = progress;
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                userPrefs.setScroller(myProgress);
-            }
-        });
-
-        Switch sw = (Switch) rootView.findViewById(R.id.switch1);
-        sw.setChecked(userPrefs.isSwtich());
-
-        sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                userPrefs.setSwtich(isChecked);
-            }
-        });
     }
 
     private void setupNumOfStimWidget() {

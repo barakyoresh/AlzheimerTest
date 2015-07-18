@@ -239,34 +239,6 @@
         android:layout_height="1dp"
         android:background="@android:color/darker_gray"/>
 
-    <!-- sample widgets -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Scrolly scrolly"
-        android:id="@+id/textView"
-        android:layout_gravity="center_horizontal" />
-
-    <SeekBar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/seekBar"
-        android:layout_gravity="center_horizontal" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Swtichy switch"
-        android:id="@+id/textView2"
-        android:layout_gravity="center_horizontal" />
-
-    <Switch
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Switch"
-        android:id="@+id/switch1"
-        android:layout_gravity="center_horizontal" />
-
 
 </LinearLayout>
 </ScrollView>
