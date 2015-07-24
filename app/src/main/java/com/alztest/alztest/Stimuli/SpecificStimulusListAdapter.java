@@ -2,7 +2,7 @@
  * Copyright (c) 2015. Barak Yoresh. all rights reserved.
  */
 
-package com.alztest.alztest.Prefrences;
+package com.alztest.alztest.Stimuli;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,7 +12,6 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.alztest.alztest.R;
-import com.alztest.alztest.Stimuli.StimulusListAdapter;
 
 import java.util.HashSet;
 
@@ -31,6 +30,7 @@ public class SpecificStimulusListAdapter extends StimulusListAdapter {
     public SpecificStimulusListAdapter(Context context, HashSet<Integer> selected) {
         super(context);
         this.selected = selected;
+        sort(SortCriteria.Category);
     }
 
     @Override

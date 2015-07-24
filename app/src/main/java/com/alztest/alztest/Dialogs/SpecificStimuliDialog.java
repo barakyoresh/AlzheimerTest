@@ -14,8 +14,8 @@ import android.widget.ListView;
 
 import com.alztest.alztest.OptionListActivity;
 import com.alztest.alztest.Prefrences.AlzTestUserPrefs;
-import com.alztest.alztest.Prefrences.SpecificStimulusListAdapter;
 import com.alztest.alztest.R;
+import com.alztest.alztest.Stimuli.SpecificStimulusListAdapter;
 
 import java.util.HashSet;
 
