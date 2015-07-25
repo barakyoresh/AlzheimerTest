@@ -118,7 +118,18 @@ public class EditDialog extends DialogFragment {
                     }
                     return;
                 }
-            });
+            })
+                    .setNeutralButton("Delete", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Log.v(OptionListActivity.APPTAG, "deleting now");
+                            DeleteDialog dd = new DeleteDialog();
+                            Bundle bundle = new Bundle();
+                            bundle.putInt(DeleteDialog.STIMULI_TO_DELETE, stimToAdd.hashCode());
+                            dd.setArguments(bundle);
+                            dd.show(getFragmentManager(), getString(R.string.action_delete));
+                        }
+                    });
 
             return builder.create();
 

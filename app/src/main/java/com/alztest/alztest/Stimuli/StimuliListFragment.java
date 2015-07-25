@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.alztest.alztest.Dialogs.AddDialog;
 import com.alztest.alztest.Dialogs.ClearDialog;
+import com.alztest.alztest.Dialogs.DeleteDialog;
 import com.alztest.alztest.Dialogs.EditDialog;
 import com.alztest.alztest.Dialogs.FileDialogCallback;
 import com.alztest.alztest.Dialogs.SaveDialog;
@@ -39,13 +40,21 @@ import static com.alztest.alztest.Stimuli.StimuliBrain.appendStimuliToDbFromExte
  */
 public class StimuliListFragment extends Fragment{
 
+
     public static StimulusListAdapter sAdapter;
     private static ListView stimuliListView;
+    public static final String SEARCH_QUERY = "STIM_SEARCH_QUERY";
+    private String searchQuery = "";
+    private String savedSearchQuery = "";
+    private SearchView searchView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View rootView = inflater.inflate(R.layout.fragment_stimuli_list, container, false);
+        if(savedInstanceState != null && savedInstanceState.containsKey(SEARCH_QUERY)) {
+            savedSearchQuery = (String) savedInstanceState.get(SEARCH_QUERY);
+        }
         setHasOptionsMenu(true);
 
         //populate list
@@ -89,34 +98,56 @@ public class StimuliListFragment extends Fragment{
                 openEditDialog(((Stimulus)sAdapter.getItem(position)));
             }
         });
+
+        stimuliListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                openDeleteDialog(((Stimulus) sAdapter.getItem(position)));
+                return true;
+            }
+        });
         return rootView;
     }
 
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        //super.onCreateOptionsMenu(menu, inflater);
+
         // Inflate the menu items for use in the action bar
         Log.v(OptionListActivity.APPTAG, "stimuli list trying to add buttons");
         inflater.inflate(R.menu.stimuli_list_actions, menu);
 
         //Search action
-        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView = (SearchView) menu.findItem(R.id.action_stim_search).getActionView();
         searchView.setLayoutParams(new ActionBar.LayoutParams(Gravity.RIGHT));
         searchView.setQueryHint(getResources().getString(R.string.search_title_stimuli));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                Log.v(OptionListActivity.APPTAG, "Search Query submit " + query);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
                 Log.v(OptionListActivity.APPTAG, "Search Query change - " + newText);
+                if(sAdapter != null) {
+                    searchQuery = newText;
+                    sAdapter.showStimuliSubset(newText);
+                    invalidateList();
+                }
                 return false;
             }
         });
+    }
 
-        super.onCreateOptionsMenu(menu, inflater);
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        Log.v(OptionListActivity.APPTAG, "stim prepare menu, setting view to " + savedSearchQuery);
+        searchView.setIconified((savedSearchQuery == null) || savedSearchQuery.equals(""));
+        searchView.setQuery(savedSearchQuery, true);
+        searchView.clearFocus();
     }
 
     @Override
@@ -126,7 +157,7 @@ public class StimuliListFragment extends Fragment{
             case R.id.action_upload:
                 openUploadDialog();
                 return true;
-            case R.id.action_search:
+            case R.id.action_stim_search:
                 return false;
             case R.id.action_clear:
                 openClearDialog();
@@ -230,30 +261,33 @@ public class StimuliListFragment extends Fragment{
     private void openAddDialog() {
         Log.v(OptionListActivity.APPTAG, "adding now");
         AddDialog ud = new AddDialog();
-        Bundle bundle = new Bundle();
         ud.show(getFragmentManager(), getString(R.string.action_add));
     }
 
+    private void openDeleteDialog(Stimulus s) {
+        Log.v(OptionListActivity.APPTAG, "deleting now");
+        DeleteDialog dd = new DeleteDialog();
+        Bundle bundle = new Bundle();
+        bundle.putInt(DeleteDialog.STIMULI_TO_DELETE, s.hashCode());
+        dd.setArguments(bundle);
+        dd.show(getFragmentManager(), getString(R.string.action_delete));
+    }
 
-    //search
-     /* ------- TEST ZONE ----- *//*
-        try {
-            QueryBuilder<AlzTestSessionStatistics, Date> qb = AlzTestDatabaseManager.getInstance().getHelper().getAlzTestSessionStatisticsDao().queryBuilder();
-            Where where = qb.where();
-            // the name field must be equal to "foo"
-            where.eq("subjectName", "b");
-            PreparedQuery<AlzTestSessionStatistics> preparedQuery = qb.prepare();
 
-            ArrayList<AlzTestSessionStatistics> sessStats = (ArrayList<AlzTestSessionStatistics>) AlzTestDatabaseManager.getInstance().getHelper().getAlzTestSessionStatisticsDao().query(preparedQuery);
-            Log.v(OptionListActivity.APPTAG, "make sure stats DB works - ");
-            for(AlzTestSessionStatistics stats : sessStats){
-                Log.v(OptionListActivity.APPTAG, "Stats made for " + stats.getSubjectName() + ", " + stats.getSubjectId());
-                for(AlzTestSingleClickStats clickStats : stats.getStatistics()){
-                    Log.v(OptionListActivity.APPTAG, clickStats.toString());
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        /* ----------------------- */
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(SEARCH_QUERY, savedSearchQuery);
+        super.onSaveInstanceState(outState);
+    }
+
+
+
+    @Override
+    public void onPause() {
+        Log.v(OptionListActivity.APPTAG, "stim pause, saving " + searchQuery);
+        savedSearchQuery = searchQuery;
+        searchView.setQuery("", false);
+        super.onPause();
+    }
+
 }

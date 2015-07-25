@@ -17,6 +17,9 @@ import com.alztest.alztest.OptionListActivity;
 import com.alztest.alztest.R;
 import com.alztest.alztest.Toolbox.AlzTestDatabaseManager;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.PreparedQuery;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -241,6 +244,35 @@ public class StatisticsListAdapter extends BaseAdapter {
                 return result > 0 ? 1 : 0;
             }
             return 0;
+        }
+    }
+
+    public void showStatisticsSubset(String query) {
+        Log.v(OptionListActivity.APPTAG, "showing stats subset according to query: " + query);
+        try {
+            //get dao
+            Dao<AlzTestSessionStatistics, Date> dao = AlzTestDatabaseManager.getInstance().getHelper().getAlzTestSessionStatisticsDao();
+
+            //build query
+            QueryBuilder<AlzTestSessionStatistics, Date> qb = dao.queryBuilder();
+            String mQuery = '%' + query + '%';
+            Where where = qb.where();
+            where.like("subjectName", mQuery);
+            //if its numerify-able, search for value as well
+            try {
+                int val = Integer.parseInt(query);
+                where.or().eq("subjectId", val);
+            } catch (NumberFormatException e) {}
+
+            //search
+            PreparedQuery<AlzTestSessionStatistics> preparedQuery = qb.prepare();
+            stats = (ArrayList<AlzTestSessionStatistics>) dao.query(preparedQuery);
+
+            //sort
+            sortList();
+        } catch (SQLException e) {
+            Log.e(OptionListActivity.APPTAG, "showStimuliSubset SQLExeption" );
+            e.printStackTrace();
         }
     }
 }

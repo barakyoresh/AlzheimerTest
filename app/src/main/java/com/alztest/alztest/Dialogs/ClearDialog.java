@@ -29,7 +29,7 @@ public class ClearDialog extends DialogFragment {
                 return;
             }
         });
-        builder.setPositiveButton("I am sure", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.IAmSure, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 StimuliBrain.clearDB();

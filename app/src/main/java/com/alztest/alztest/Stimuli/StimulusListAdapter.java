@@ -17,6 +17,9 @@ import com.alztest.alztest.OptionListActivity;
 import com.alztest.alztest.R;
 import com.alztest.alztest.Toolbox.AlzTestDatabaseManager;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.PreparedQuery;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -230,6 +233,35 @@ public class StimulusListAdapter extends BaseAdapter {
         @Override
         public int compare(Stimulus lhs, Stimulus rhs) {
             return lhs.getValue() - rhs.getValue();
+        }
+    }
+
+    public void showStimuliSubset(String query) {
+        Log.v(OptionListActivity.APPTAG, "showing stimuli subset according to query: " + query);
+        try {
+            //get dao
+            Dao<Stimulus, Integer> dao = AlzTestDatabaseManager.getInstance().getHelper().getStimuliDao();
+
+            //build query
+            QueryBuilder<Stimulus, Integer> qb = dao.queryBuilder();
+            String mQuery = '%' + query + '%';
+            Where where = qb.where();
+            where.like("category", mQuery).or().like("name", mQuery);
+            //if its numerify-able, search for value as well
+            try {
+                int val = Integer.parseInt(query);
+                where.or().eq("value", val);
+            } catch (NumberFormatException e) {}
+
+            //search
+            PreparedQuery<Stimulus> preparedQuery = qb.prepare();
+            stimuli = (ArrayList<Stimulus>) dao.query(preparedQuery);
+
+            //sort
+            sortList();
+        } catch (SQLException e) {
+            Log.e(OptionListActivity.APPTAG, "showStimuliSubset SQLExeption" );
+            e.printStackTrace();
         }
     }
 }

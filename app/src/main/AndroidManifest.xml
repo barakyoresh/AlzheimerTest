@@ -18,7 +18,7 @@
             </intent-filter>
             <!-- This metadata entry provides further configuration details for searches -->
             <!-- that are handled by this activity. -->
-            <meta-data android:name="android.app.default_searchable" android:value=".SearchActivity" />
+            <!-- <meta-data android:name="android.app.default_searchable" android:value=".SearchActivity" /> -->
         </activity>
 
         <activity

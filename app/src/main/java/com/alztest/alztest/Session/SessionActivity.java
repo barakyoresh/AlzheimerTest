@@ -70,16 +70,57 @@ public class SessionActivity extends Activity {
         AlzTestSessionFactory sessionFactory = new AlzTestSessionFactory(this);
         sessionStimuliPairsByCategory = sessionFactory.buildSessionData(userPrefs);
 
+        //toast / dialog when there aren't enough pairs
+        int pairs = 0;
+        for(ArrayList<Pair<Stimulus, Stimulus>> pairList : sessionStimuliPairsByCategory) {
+            pairs += pairList.size();
+        }
+        if(pairs > 0 && pairs < userPrefs.getNumberOfPairsInTrial()) {
+            Toast.makeText(this, "Insufficient pairs! using starting simulation with " + pairs + " pairs", Toast.LENGTH_SHORT);
+            AlertDialog.Builder dialogbuilder = new AlertDialog.Builder(this);
+            dialogbuilder.setTitle("Insufficient pairs")
+                    .setMessage("Continue simulation using " + pairs + " pairs?")
+                    .setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    })
+                    .setPositiveButton(R.string.Okay, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //start session
+                            beginSession();
+                        }
+                    });
+
+            AlertDialog d = dialogbuilder.create();
+            d.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    superOnBackPressed();
+                }
+            });
+            d.show();
+        } else if(pairs <= 0) {
+            Toast.makeText(this, "Insufficient Stimuli for session", Toast.LENGTH_SHORT).show();
+            superOnBackPressed();
+        } else {
+            //start session
+            beginSession();
+        }
+   }
+
+    private void beginSession(){
         if(sessionStimuliPairsByCategory.size() > 0) {
             sessionStimuliPairs = sessionStimuliPairsByCategory.remove(0);
         }else {
             sessionStimuliPairs = null;
         }
 
-
         //init stats
         sessionStatistics = new AlzTestSessionStatistics(this.getIntent().getStringExtra(NewSessionFragment.SUBJECT_NAME),
-                                                         this.getIntent().getLongExtra(NewSessionFragment.SUBJECT_ID, -1));
+                this.getIntent().getLongExtra(NewSessionFragment.SUBJECT_ID, -1));
         sessionStatistics.setMMSEOrientationSpace(this.getIntent().getIntExtra(NewSessionFragment.MMSE_SPACE, -1));
         sessionStatistics.setMMSEOrientationTime(this.getIntent().getIntExtra(NewSessionFragment.MMSE_TIME, -1));
         sessionStatistics.setMMSETotal(this.getIntent().getIntExtra(NewSessionFragment.MMSE_TOTAL, -1));
@@ -101,7 +142,6 @@ public class SessionActivity extends Activity {
             }
         });
 
-        //start session
         if(sessionStimuliPairs != null && sessionStimuliPairs.size() > 0) {
             invokeCountdown(this, "New Session, Category: " + sessionStimuliPairs.get(0).first.getCategory(), new CountdownCallback() {
                 @Override
@@ -113,7 +153,7 @@ public class SessionActivity extends Activity {
             Toast.makeText(this, "Insufficient Stimuli for session", Toast.LENGTH_SHORT).show();
             superOnBackPressed();
         }
-   }
+    }
 
     @Override
     public void onBackPressed() {

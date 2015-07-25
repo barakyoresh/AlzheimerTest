@@ -40,11 +40,19 @@ public class StatisticsListFragment extends Fragment{
     public static final String STATISTIC = "statistic";
     public static StatisticsListAdapter sAdapter;
     private static ListView stimuliListView;
+    public static final String SEARCH_QUERY = "STAT_SEARCH_QUERY";
+    private String searchQuery = "";
+    private String savedSearchQuery = "";
+    private SearchView searchView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View rootView = inflater.inflate(R.layout.fragment_statistics_list, container, false);
+
+        if(savedInstanceState != null && savedInstanceState.containsKey(SEARCH_QUERY)) {
+            savedSearchQuery = (String) savedInstanceState.get(SEARCH_QUERY);
+        }
         setHasOptionsMenu(true);
 
         //populate list
@@ -100,7 +108,7 @@ public class StatisticsListFragment extends Fragment{
         inflater.inflate(R.menu.statistics_list_actions, menu);
 
         //Search action
-        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView = (SearchView) menu.findItem(R.id.action_stat_search).getActionView();
         searchView.setLayoutParams(new ActionBar.LayoutParams(Gravity.RIGHT));
         searchView.setQueryHint(getResources().getString(R.string.search_title_statistics));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -112,11 +120,22 @@ public class StatisticsListFragment extends Fragment{
             @Override
             public boolean onQueryTextChange(String newText) {
                 Log.v(OptionListActivity.APPTAG, "Search Query change - " + newText);
+                if(sAdapter != null) {
+                    searchQuery = newText;
+                    sAdapter.showStatisticsSubset(newText);
+                    invalidateList();
+                }
                 return false;
             }
         });
+    }
 
-        super.onCreateOptionsMenu(menu, inflater);
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        Log.v(OptionListActivity.APPTAG, "stat prepare menu, setting view to " + savedSearchQuery);
+        searchView.setIconified((savedSearchQuery == null) || savedSearchQuery.equals(""));
+        searchView.setQuery(savedSearchQuery, true);
+        searchView.clearFocus();
     }
 
     @Override
@@ -126,7 +145,7 @@ public class StatisticsListFragment extends Fragment{
             case R.id.action_export:
                 openSaveDialog();
                 return true;
-            case R.id.action_search:
+            case R.id.action_stat_search:
                 return false;
             case R.id.action_clear:
                 openClearDialog();
@@ -216,10 +235,23 @@ public class StatisticsListFragment extends Fragment{
     }
 
     private void openReadMoreDialog(AlzTestSessionStatistics stat) {
-        //TODO: open stats view
         Intent intent = new Intent(getActivity(), StatisticsActivity.class);
         intent.putExtra(STATISTIC, AlzTestSerializeManager.serialize(stat));
         startActivity(intent);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(SEARCH_QUERY, savedSearchQuery);
+        super.onSaveInstanceState(outState);
+    }
+
+
+    @Override
+    public void onPause() {
+        Log.v(OptionListActivity.APPTAG, "stat pause, saving " + searchQuery);
+        savedSearchQuery = searchQuery;
+        searchView.setQuery("", false);
+        super.onPause();
+    }
 }
