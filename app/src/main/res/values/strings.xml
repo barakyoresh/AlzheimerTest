@@ -47,6 +47,7 @@
     <string name="action_send_statistics_via_email">Send Statistics via Email</string>
     <string name="IAmSure">I am sure</string>
     <string name="action_delete">delete stimulus</string>
+    <string name="Close">Close</string>
 
 
 </resources>

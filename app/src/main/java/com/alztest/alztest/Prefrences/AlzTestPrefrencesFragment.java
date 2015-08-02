@@ -132,6 +132,15 @@ public class AlzTestPrefrencesFragment extends Fragment {
                 }
             }
         });
+
+        //tooltip
+        ImageView info = (ImageView) rootView.findViewById(R.id.infButtonSpecificStimuli);
+        info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openInfoTooltipDialog("Specific Stimuli", "lorem ipsum");
+            }
+        });
     }
 
     private void setupSessionCountdownWidget() {
@@ -179,8 +188,8 @@ public class AlzTestPrefrencesFragment extends Fragment {
         sessTextSize.setSelection(userPrefs.getTextSizePosition());
 
 
-        //icon
-        ImageView infoIcon = (ImageView) rootView.findViewById(R.id.textSizeInfoImage);
+        //preview button
+        Button infoIcon = (Button) rootView.findViewById(R.id.textSizeInfoButton);
         infoIcon.setClickable(true);
         infoIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -201,12 +210,25 @@ public class AlzTestPrefrencesFragment extends Fragment {
         float textSizeMultiplier = (userPrefs.getTextSize() / 100);
         exampleText.setTextSize(TypedValue.COMPLEX_UNIT_PX, exampleText.getTextSize() * textSizeMultiplier);
         builder.setView(dialogView);
-        builder.setNeutralButton("Close", new DialogInterface.OnClickListener() {
+        builder.setNeutralButton(R.string.Close, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
             }
         });
+        builder.create().show();
+    }
+
+    private void openInfoTooltipDialog(String infoTextTitle, String infoText) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(infoTextTitle)
+                .setMessage(infoText)
+                .setNeutralButton(R.string.Close, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
         builder.create().show();
     }
 
@@ -409,6 +431,15 @@ public class AlzTestPrefrencesFragment extends Fragment {
             }
         });
         maxSpinner.setSelection(userPrefs.getMaximumValueDifference());
+
+        //tooltip
+        ImageView info = (ImageView) rootView.findViewById(R.id.infButtonValueDifference);
+        info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openInfoTooltipDialog("Value Difference", "lorem ipsum");
+            }
+        });
 
     }
 

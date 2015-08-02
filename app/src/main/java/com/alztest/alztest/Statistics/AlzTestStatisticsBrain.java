@@ -5,10 +5,8 @@
 package com.alztest.alztest.Statistics;
 
 import android.util.Log;
-import android.util.Pair;
 
 import com.alztest.alztest.OptionListActivity;
-import com.alztest.alztest.Prefrences.AlzTestCategoryAdapter;
 import com.alztest.alztest.Session.AlzTestSingleClickStats;
 import com.alztest.alztest.Session.StimulusSelection;
 import com.alztest.alztest.Stimuli.Stimulus;
@@ -28,7 +26,6 @@ import jxl.write.WritableWorkbook;
  */
 public class AlzTestStatisticsBrain {
 
-    public static final double EPSILON = 0.00001;
 
     public static boolean saveStatisticsToFile(AlzTestSessionStatistics stats, File file) {
         if(!file.getAbsolutePath().endsWith(".xls")) {
@@ -94,41 +91,8 @@ public class AlzTestStatisticsBrain {
         return true;
     }
 
-    /**
-     * Returns a list of (categoryName, value) where value is calculated to be
-     * (# Correct Responses / # Stimuli Pairs Show) / Average Response Times
-     * @param stats list of clickStats objects representing the session data
-     * @param categoryPreferences list of category preferences, including which categories to analyze
-     * @return
-     */
-    public static ArrayList<Pair<String, Float>> getBarGraphCatValues(ArrayList<AlzTestSingleClickStats> stats, ArrayList<AlzTestCategoryAdapter.CategoryListItem> categoryPreferences) {
-        ArrayList<Pair<String, Float>> data = new ArrayList<Pair<String, Float>>();
 
-        //iterate categories
-        for(AlzTestCategoryAdapter.CategoryListItem category : categoryPreferences) {
-            if(category.isIncludeInSession() && category.isIncludeInAnalysis()) {
-                String categoryName = category.getCategory();
-                int numOfPairsInCategroy = 0;
-                int numOfCorrectAnswersInCategory = 0;
-                long sumResponseTimesInMs = 0;
 
-                //iterate stats
-                for(AlzTestSingleClickStats stat : stats) {
-                    if(stat.rightStim.getCategory().equals(categoryName)){ //if relevant category
-                        numOfPairsInCategroy++;
-                        numOfCorrectAnswersInCategory += (stat.correctResponse ? 1 : 0);
-                        sumResponseTimesInMs += stat.getResponseTimeInMs();
-                        // This is for possible future hard coded changes by Greg.
-                        //sumResponseTimesInMs += (stat.correctResponse ? stat.getResponseTimeInMs() : 0);
-                    }
-                }
 
-                //finalize data
-                float value = (float) (((float) numOfCorrectAnswersInCategory / numOfPairsInCategroy) / (sumResponseTimesInMs / numOfPairsInCategroy + EPSILON));
-                data.add(new Pair<String, Float>(categoryName, value));
-            }
-        }
 
-        return data;
-    }
 }

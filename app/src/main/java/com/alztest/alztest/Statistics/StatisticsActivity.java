@@ -5,11 +5,9 @@
 package com.alztest.alztest.Statistics;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,14 +21,9 @@ import com.alztest.alztest.R;
 import com.alztest.alztest.Toolbox.AlzTestEmailAssistant;
 import com.alztest.alztest.Toolbox.AlzTestSerializeManager;
 import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.GridLabelRenderer;
-import com.jjoe64.graphview.helper.StaticLabelsFormatter;
-import com.jjoe64.graphview.series.BarGraphSeries;
-import com.jjoe64.graphview.series.DataPoint;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 
 import static android.support.v4.content.FileProvider.getUriForFile;
 
@@ -61,7 +54,12 @@ public class StatisticsActivity extends Activity {
 
         // present data
         //graph
-        updateGraph(stat);
+        AlzTestBarGraphManager graphManager = new AlzTestBarGraphManager();
+        graphManager.addSessionData(stat);
+        graphManager.addSessionData(stat);
+        graphManager.addSessionData(stat);
+        //graphManager.addSessionData(stat);
+        graphManager.updateBarGraph((GraphView) findViewById(R.id.statisticsaGraph), graphManager.getResponseDataTrends(), "(# Correct Responses / # Stimuli Pairs Show) / Average Response Times");
 
         //MMSE
         updateMMSE(stat);
@@ -79,48 +77,6 @@ public class StatisticsActivity extends Activity {
         totalScore.setText(Integer.toString(stat.getMMSETotal()));
     }
 
-
-    private void updateGraph(final AlzTestSessionStatistics stats) {
-        GraphView gv = (GraphView) findViewById(R.id.statisticsaGraph);
-
-        ArrayList<Pair<String, Float>> categoryCorDivAvgResponseTime =
-                AlzTestStatisticsBrain.getBarGraphCatValues(stats.getStatistics(), stats.getCategoryPreferences());
-
-        int size = categoryCorDivAvgResponseTime.size();
-
-        //bar data and labels
-        DataPoint dp[] = new DataPoint[size];
-        String labels[] = new String[size + 2]; //the graph spans from zero to size. both zero and size should be empty labels
-        labels[0] = "";
-        labels[size] = "";
-
-        for (int i = 0 ; i < size ; i++) {
-            dp[i] = new DataPoint(i+1, categoryCorDivAvgResponseTime.get(i).second);
-            labels[i+1] = categoryCorDivAvgResponseTime.get(i).first;
-        }
-
-        BarGraphSeries bseries = new BarGraphSeries<DataPoint>(dp);
-
-        bseries.setSpacing(50);
-        bseries.setDrawValuesOnTop(true);
-        bseries.setValuesOnTopColor(Color.RED);
-
-        gv.addSeries(bseries);
-
-        gv.getViewport().setXAxisBoundsManual(true);
-        gv.getViewport().setMinX(0);
-        gv.getViewport().setMaxX(size + 1);
-
-        GridLabelRenderer labelRenderer = gv.getGridLabelRenderer();
-        labelRenderer.setGridStyle(GridLabelRenderer.GridStyle.HORIZONTAL);
-
-        StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(gv);
-        staticLabelsFormatter.setHorizontalLabels(labels);
-        gv.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
-
-
-        gv.setTitle("(# Correct Responses / # Stimuli Pairs Show) / Average Response Times");
-    }
 
 
     @Override

@@ -12,6 +12,10 @@
     android:layout_height="fill_parent">
     <!-- choose specific categories -->
 
+
+
+
+
     <TextView
         android:layout_margin="5dp"
         android:layout_width="wrap_content"
@@ -20,7 +24,44 @@
         android:textSize="18sp"
         android:text="@string/categoryOptionsHeader" />
 
-    <ListView
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="5dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="0dip"
+            android:layout_weight="3"
+            android:textSize="18sp"
+            android:layout_margin="5dp"
+            android:text="@string/legend_category" />
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="0dip"
+            android:layout_weight="1"
+            android:textSize="18sp"
+            android:layout_margin="5dp"
+            android:text="Include In Session" />
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="0dip"
+            android:layout_weight="1"
+            android:textSize="18sp"
+            android:layout_margin="5dp"
+            android:text="Include In Analysis" />
+
+        </LinearLayout>
+
+        <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"/>
+
+        <ListView
         android:layout_width="match_parent"
         android:layout_margin="5dp"
         android:layout_weight="1"
@@ -43,7 +84,7 @@
 
     <LinearLayout
         android:orientation="horizontal"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_margin="5dp"
         android:layout_height="wrap_content">
 
@@ -70,6 +111,21 @@
             android:layout_height="wrap_content"
             android:id="@+id/maxValueDifferenceSpinner"/>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_margin="5dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:clickable="true"
+                android:src="@drawable/ic_action_about"
+                android:id="@+id/infButtonValueDifference"/>
+
+        </RelativeLayout>
 
     </LinearLayout>
 
@@ -157,7 +213,7 @@
         android:layout_height="1dp"
         android:background="@android:color/darker_gray"/>
 
-    <!-- session countdown timer -->
+    <!-- session text size -->
 
     <TextView
         android:layout_margin="5dp"
@@ -184,14 +240,14 @@
             android:layout_height="wrap_content"
             android:id="@+id/textSizeSpinner"/>
 
-        <ImageView
-            android:layout_margin="5dp"
-            android:layout_width="40dp"
-            android:layout_gravity="center_horizontal"
+        <Button
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_action_about"
+            android:layout_marginLeft="5dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="preview"
             android:clickable="true"
-            android:id="@+id/textSizeInfoImage"/>
+            android:id="@+id/textSizeInfoButton"/>
 
     </LinearLayout>
 
@@ -214,7 +270,7 @@
 
     <LinearLayout
         android:orientation="horizontal"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_margin="5dp"
         android:layout_height="wrap_content">
 
@@ -232,6 +288,25 @@
             android:layout_margin="5dp"
             android:text="Use Specific Stimuli Subset"
             android:id="@+id/specifiStimuliSubsetCheckBox" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_margin="5dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:clickable="true"
+                android:src="@drawable/ic_action_about"
+                android:id="@+id/infButtonSpecificStimuli"/>
+
+        </RelativeLayout>
+
+
+
     </LinearLayout>
 
     <View
