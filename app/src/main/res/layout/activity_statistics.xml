@@ -19,7 +19,16 @@
     <com.jjoe64.graphview.GraphView
         android:layout_width="match_parent"
         android:layout_height="200dip"
-        android:id="@+id/statisticsaGraph" />
+        android:id="@+id/successDivResponseGraph" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/successDivResponseCategories">
+
+
+    </LinearLayout>
 
     <View
         android:layout_width="fill_parent"

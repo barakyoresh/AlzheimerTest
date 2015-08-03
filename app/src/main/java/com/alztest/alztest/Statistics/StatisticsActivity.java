@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,7 +60,7 @@ public class StatisticsActivity extends Activity {
         graphManager.addSessionData(stat);
         graphManager.addSessionData(stat);
         //graphManager.addSessionData(stat);
-        graphManager.updateBarGraph((GraphView) findViewById(R.id.statisticsaGraph), graphManager.getResponseDataTrends(), "(# Correct Responses / # Stimuli Pairs Show) / Average Response Times");
+        graphManager.updateBarGraph((GraphView) findViewById(R.id.successDivResponseGraph), (LinearLayout) findViewById(R.id.successDivResponseCategories), graphManager.getResponseDataTrends(), "(# Correct Responses / # Stimuli Pairs Show) / Average Response Times");
 
         //MMSE
         updateMMSE(stat);
