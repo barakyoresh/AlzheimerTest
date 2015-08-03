@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +27,7 @@ import com.jjoe64.graphview.GraphView;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static android.support.v4.content.FileProvider.getUriForFile;
 
@@ -33,6 +36,8 @@ import static android.support.v4.content.FileProvider.getUriForFile;
  */
 public class StatisticsActivity extends Activity {
     AlzTestSessionStatistics stat = null;
+    Date sessionDate = null;
+    private boolean timeCourseSwitch = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,22 +55,46 @@ public class StatisticsActivity extends Activity {
             onBackPressed();
         }
 
+        //session date must be shipped separately since serializing it omits
+        sessionDate = new Date(getIntent().getLongExtra(StatisticsListFragment.DATE, 0));
+        if(sessionDate == null) {
+            onBackPressed();
+        }
+
         Log.v(OptionListActivity.APPTAG, String.valueOf(stat.getMMSETotal()));
         Log.v(OptionListActivity.APPTAG, stat.getSubjectName());
 
         // present data
         //graph
-        AlzTestBarGraphManager graphManager = new AlzTestBarGraphManager();
-        graphManager.addSessionData(stat);
-        graphManager.addSessionData(stat);
-        graphManager.addSessionData(stat);
-        //graphManager.addSessionData(stat);
-        graphManager.updateBarGraph((GraphView) findViewById(R.id.successDivResponseGraph), (LinearLayout) findViewById(R.id.successDivResponseCategories), graphManager.getResponseDataTrends(), "(# Correct Responses / # Stimuli Pairs Show) / Average Response Times");
+        final AlzTestBarGraphManager graphManager = new AlzTestBarGraphManager();
+        graphManager.addAllSessionData(AlzTestStatisticsBrain.getAllStatsById(stat.getSubjectId()));
+        updateAllGraphs(graphManager, 0, graphManager.getNumberOfSessions(), sessionDate /*stat.getSessionStartTime()*/);
+        //button
+        final Button timeCourse = (Button) findViewById(R.id.timeCourseButton);
+        timeCourse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!timeCourseSwitch) {
+                    int offset = Math.max(0, graphManager.getNumberOfSessions() - 5);
+                    updateAllGraphs(graphManager, offset, 4, null);
+                } else {
+                    updateAllGraphs(graphManager, 0, graphManager.getNumberOfSessions(), sessionDate);
+                }
+                timeCourseSwitch = !timeCourseSwitch;
+            }
+        });
+
 
         //MMSE
         updateMMSE(stat);
 
         return;
+    }
+
+    private void updateAllGraphs(AlzTestBarGraphManager graphManager, int pos, int len, Date specificDate){
+        graphManager.updateBarGraph((GraphView) findViewById(R.id.successDivResponseGraph), (LinearLayout) findViewById(R.id.successDivResponseCategories), graphManager.getSucDivRespDataTrends(), AlzTestBarGraphManager.SUC_DIV_RESP,  pos, len, specificDate);
+        graphManager.updateBarGraph((GraphView) findViewById(R.id.responseGraph), (LinearLayout) findViewById(R.id.responseCategories), graphManager.getResponseDataTrends(), AlzTestBarGraphManager.RESP,  pos, len, specificDate);
+        graphManager.updateBarGraph((GraphView) findViewById(R.id.successGraph), (LinearLayout) findViewById(R.id.successCategories), graphManager.getSuccessDataTrends(), AlzTestBarGraphManager.SUC, pos, len, specificDate);
     }
 
     private void updateMMSE(AlzTestSessionStatistics stat) {

@@ -36,8 +36,8 @@ import java.text.SimpleDateFormat;
  * Created by Barak Yoresh on 29/11/2014.
  */
 public class StatisticsListFragment extends Fragment{
-
-    public static final String STATISTIC = "statistic";
+    public static final String STATISTIC = "STATISTIC";
+    public static final String DATE = "DATE";
     public static StatisticsListAdapter sAdapter;
     private static ListView stimuliListView;
     public static final String SEARCH_QUERY = "STAT_SEARCH_QUERY";
@@ -237,6 +237,7 @@ public class StatisticsListFragment extends Fragment{
     private void openReadMoreDialog(AlzTestSessionStatistics stat) {
         Intent intent = new Intent(getActivity(), StatisticsActivity.class);
         intent.putExtra(STATISTIC, AlzTestSerializeManager.serialize(stat));
+        intent.putExtra(DATE, stat.getSessionStartTime().getTime()); //send date as long, since serializing its ommits last 1000 ms
         startActivity(intent);
     }
 

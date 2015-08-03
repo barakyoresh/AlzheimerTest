@@ -138,7 +138,7 @@ public class AlzTestPrefrencesFragment extends Fragment {
         info.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openInfoTooltipDialog("Specific Stimuli", "lorem ipsum");
+                openInfoTooltipDialog("Specific Stimuli", getActivity().getString(R.string.SpecificStimuliTooltip));
             }
         });
     }
@@ -393,8 +393,6 @@ public class AlzTestPrefrencesFragment extends Fragment {
 
         //max
         Spinner maxSpinner = (Spinner) rootView.findViewById(R.id.maxValueDifferenceSpinner);
-       // maxSpinner.setAdapter(new ArrayAdapter<Integer>(getActivity(), android.R.layout.simple_spinner_dropdown_item,
-       //         userPrefs.getAllValueDifferences()));
         maxSpinner.setAdapter(new ArrayAdapter<Integer>(getActivity(), android.R.layout.simple_spinner_dropdown_item,
                 userPrefs.getAllValueDifferences()){
 
@@ -437,7 +435,7 @@ public class AlzTestPrefrencesFragment extends Fragment {
         info.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openInfoTooltipDialog("Value Difference", "lorem ipsum");
+                openInfoTooltipDialog("Value Difference", getActivity().getString(R.string.ValueDifferenceTooltip));
             }
         });
 

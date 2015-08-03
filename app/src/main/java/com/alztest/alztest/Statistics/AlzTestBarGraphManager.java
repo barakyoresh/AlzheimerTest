@@ -25,6 +25,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Created by Barak Yoresh on 02/08/2015.
@@ -32,9 +33,14 @@ import java.util.LinkedHashMap;
 
 public class AlzTestBarGraphManager {
     static final float EPSILON = 0.0001f;
-    static int[] subGraphColors = new int[]{Color.BLUE, Color.CYAN, Color.GREEN, Color.MAGENTA};
+    public static final String SUC_DIV_RESP = "Mean Success Rate/Mean Response Time",
+                        RESP = "Mean Response Time",
+                        SUC = "Mean Success Rate";
+    public static final String INTEGRATED = "Integrated";
+    static int[] subGraphColors = new int[]{Color.parseColor("#329967"), Color.parseColor("#366092"),Color.parseColor("#953737"), Color.parseColor("#31859D")};
+    private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM");
 
-    private int subGraphIndex = 0;
+
     private int numberOfSessions = 0;
     private int numberOfBars = 0;
     private int numberOfCategories;
@@ -42,6 +48,8 @@ public class AlzTestBarGraphManager {
     private LinkedHashMap<String, ArrayList<Pair<Float, Date>>> successDataTrends = new LinkedHashMap<String, ArrayList<Pair<Float, Date>>>();
     private LinkedHashMap<String, ArrayList<Pair<Float, Date>>> responseDataTrends = new LinkedHashMap<String, ArrayList<Pair<Float, Date>>>();
     private LinkedHashMap<String, ArrayList<Pair<Float, Date>>> sucDivRespDataTrends = new LinkedHashMap<String, ArrayList<Pair<Float, Date>>>();
+    private HashMap<Integer, Integer> colorMap;
+    private LinkedHashMap<String, Float> categoryLabelsAndWeights;
 
     private HashMap<HashMap<String, ArrayList<Pair<Float, Date>>>, Boolean> trendSorted = new HashMap<HashMap<String, ArrayList<Pair<Float, Date>>>, Boolean>();
 
@@ -118,16 +126,14 @@ public class AlzTestBarGraphManager {
         }
 
         //add integrated fictive category
-        addSessionToCategory("Integrated", date, (sumCorrectAnswers / (numOfPairs + EPSILON)),  ((float) sumResponseTime / (numOfPairs + EPSILON)));
+        addSessionToCategory(INTEGRATED, date, (sumCorrectAnswers / (numOfPairs + EPSILON)),  ((float) sumResponseTime / (numOfPairs + EPSILON)));
     }
 
     private void addSessionToCategory(String categoryName, Date date, float meanCorrectAnswers, float meanResponseTime) {
-
         ArrayList<Pair<Float, Date>> l;
-        numberOfBars++;
 
 
-        //TODO: clean up this messy code, there's not option of one containing and the rest not.
+        //TODO: clean up this messy code, there's not option of one containing  the key and the rest not.
         //success
         if (successDataTrends.containsKey(categoryName)) {
             l = successDataTrends.get(categoryName);
@@ -165,11 +171,15 @@ public class AlzTestBarGraphManager {
 
     }
 
-    public void updateBarGraph(GraphView gv, LinearLayout categoryLabels, final HashMap<String, ArrayList<Pair<Float, Date>>> trend, String title) {
-        //TODO: change this to be so that a user can choose which dates to show
-        if(numberOfSessions <= 0 || numberOfBars <= 0){
+
+    public void updateBarGraph(GraphView gv, LinearLayout categoryLabels, HashMap<String, ArrayList<Pair<Float, Date>>> trend, String title, int pos, int len, Date specificDate) {
+        if(numberOfSessions <= 0){
             return;
         }
+
+        gv.removeAllSeries();
+        gv.getGridLabelRenderer().resetStyles();
+        categoryLabels.removeAllViews();
 
         //sort trend categories if needed
         if(!trendSorted.containsKey(trend) || !trendSorted.get(trend)) {
@@ -182,21 +192,22 @@ public class AlzTestBarGraphManager {
 
 
         //update series and labels
-        updateBarSeriesAndLabels(trend);
+        updateBarSeriesAndLabels(trend, pos, len, specificDate);
 
         gv.addSeries(series);
 
         //graph styling
         //size
         gv.getViewport().setXAxisBoundsManual(true);
+
         gv.getViewport().setMinX(0);
         gv.getViewport().setMaxX(numberOfBars + trend.size());
 
 
         //labels
         GridLabelRenderer labelRenderer = gv.getGridLabelRenderer();
-        labelRenderer.setGridStyle(GridLabelRenderer.GridStyle.NONE);
-        labelRenderer.setNumHorizontalLabels(numberOfBars);
+        labelRenderer.setGridStyle(GridLabelRenderer.GridStyle.HORIZONTAL);
+        labelRenderer.setNumVerticalLabels(2);
         labelRenderer.setVerticalLabelsVisible(false);
         StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(gv);
         staticLabelsFormatter.setHorizontalLabels(labels);
@@ -207,57 +218,102 @@ public class AlzTestBarGraphManager {
         gv.setTitle(title);
 
         //update category labels
-        for(String category : trend.keySet()) {
+        for(String category : categoryLabelsAndWeights.keySet()) {
             TextView tv = new TextView(categoryLabels.getContext());
-            tv.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+            tv.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, categoryLabelsAndWeights.get(category)));
             tv.setGravity(Gravity.CENTER);
-            tv.setText(category);
+            tv.setText(category.contains("_") ? "" : category); //"_" represent a spacer
             categoryLabels.addView(tv);
         }
     }
 
-    private void updateBarSeriesAndLabels(final HashMap<String, ArrayList<Pair<Float, Date>>> trend){
-        resetSubGraphColors();
+    private void updateBarSeriesAndLabels(HashMap<String, ArrayList<Pair<Float, Date>>> trend, int pos, int len,  Date specificDate){
         int offset = 1;
+        ArrayList<String> tmpLabels = new ArrayList<String>();
+        ArrayList<DataPoint> tmpDp = new ArrayList<DataPoint>();
+        colorMap = new HashMap<Integer, Integer>();
+        categoryLabelsAndWeights = new LinkedHashMap<String, Float>();
 
-        //date labels
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM");
-        labels = new String[numberOfBars + 1 + trend.size()]; //+1 for zero, empty label
-        labels[0] = "";
-
-        DataPoint dp[] = new DataPoint[numberOfBars + trend.size()];
-
-        //iterate categories and update series
-        int j = 0;
-        for(ArrayList<Pair<Float, Date>> subGraph : trend.values()) {
-            //TODO: enable subset of sessions from each category
-            //add data
-            for (int i = 0 ; i < subGraph.size() ; i++) {
-                dp[i + offset -1] = new DataPoint(i + offset, Float.isNaN(subGraph.get(i).first) ? 0 : subGraph.get(i).first);
-                labels[i + offset] = sdf.format(subGraph.get(i).second);
+        //sort categories inside trend
+        ArrayList<Map.Entry<String, ArrayList<Pair<Float, Date>>>> entries = new ArrayList<Map.Entry<String, ArrayList<Pair<Float, Date>>>>(trend.entrySet());
+        Collections.sort(entries, new Comparator<Map.Entry<String, ArrayList<Pair<Float, Date>>>>() {
+            @Override
+            public int compare(Map.Entry<String, ArrayList<Pair<Float, Date>>> lhs, Map.Entry<String, ArrayList<Pair<Float, Date>>> rhs) {
+                if(lhs.getKey().equals(INTEGRATED)) return 1; //integrated always last
+                if(rhs.getKey().equals(INTEGRATED)) return -1;
+                return - lhs.getKey().compareTo(rhs.getKey()); //the rest are reverese alphabetical
             }
-
-            //advance offset
-            offset += subGraph.size();
-
-            //add spacer
-            if(j < trend.size()) {
-                dp[offset -1] = new DataPoint(offset, 0f);
-                labels[offset] = " ";
-                offset++;
-            }
-            j++;
+        });
+        trend = new LinkedHashMap<String, ArrayList<Pair<Float, Date>>>();
+        for(Map.Entry<String, ArrayList<Pair<Float, Date>>> entry : entries) {
+            trend.put(entry.getKey(), entry.getValue());
         }
 
 
-        series = new BarGraphSeries<DataPoint>(dp);
+        //fill bars
+        tmpLabels.add(" ");
+        categoryLabelsAndWeights.put("_" + Integer.toString(offset), 0.5f);
+
+        //iterate categories and update series
+        int category = 0;
+        numberOfBars = 0;
+        for(String categoryName : trend.keySet()) {
+            ArrayList<Pair<Float, Date>> subGraph = trend.get(categoryName);
+            //add data
+            for (int i = 0 ; i < subGraph.size() ; i++) {
+
+                //add point if its in range OR if date isn't null and matches current date
+                boolean appendDataPoint = false;
+                if(specificDate == null) {
+                    if ((i >= pos && i < pos + len)) {
+                        appendDataPoint = true;
+                    }
+                }
+                else {
+                    if(specificDate.equals(subGraph.get(i).second)){
+                            appendDataPoint = true;
+                    }
+                }
+
+
+                if(appendDataPoint) {
+                    tmpLabels.add(sdf.format(subGraph.get(i).second));
+                    tmpDp.add(new DataPoint(offset, Float.isNaN(subGraph.get(i).first) ? 0 : subGraph.get(i).first));
+                    colorMap.put(offset, category);
+                    offset++;
+                    numberOfBars++;
+                    categoryLabelsAndWeights.put(categoryName,
+                            categoryLabelsAndWeights.containsKey(categoryName) ?
+                                    categoryLabelsAndWeights.get(categoryName) + 1 : 1f);
+                }
+            }
+
+            //add empty bar as spacer
+            if(category < trend.size() -1) {
+                tmpDp.add(new DataPoint(offset, 0f));
+                tmpLabels.add(" ");
+                categoryLabelsAndWeights.put("_" + Float.toString(offset), 1f);
+                offset++;
+            }
+            category++;
+        }
+
+        categoryLabelsAndWeights.put("_" + Integer.toString(offset), 0.5f);
+
+        tmpLabels.add(" ");
+        labels = tmpLabels.toArray(new String[tmpLabels.size()]);
+        series = new BarGraphSeries<DataPoint>(tmpDp.toArray(new DataPoint[tmpDp.size()]));
 
         //series styling
         //color change callback
         series.setValueDependentColor(new ValueDependentColor<DataPoint>() {
             @Override
             public int get(DataPoint data) {
-                return getSubGraphColor((int) (data.getX() - 1) / (numberOfSessions+1)); // +1 for spacers
+                int intPos = (int) (data.getX());
+                if(colorMap.containsKey(intPos)) {
+                    return getSubGraphColor(colorMap.get(intPos));
+                }
+                return getSubGraphColor(0);
             }
         });
 
@@ -265,12 +321,14 @@ public class AlzTestBarGraphManager {
     }
 
 
-    private void resetSubGraphColors() {
-        subGraphIndex = 0;
-    }
-
     private int getSubGraphColor(int index){
         return subGraphColors[index % subGraphColors.length];
+    }
+
+    public void addAllSessionData(ArrayList<AlzTestSessionStatistics> stats) {
+        for (AlzTestSessionStatistics stat : stats) {
+            addSessionData(stat);
+        }
     }
 
 
@@ -280,5 +338,23 @@ public class AlzTestBarGraphManager {
         public int compare(Pair<Float, Date> lhs, Pair<Float, Date> rhs) {
             return lhs.second.compareTo(rhs.second);
         }
+    }
+
+
+    public int getNumberOfSessions() {
+        return numberOfSessions;
+    }
+
+    public void resetData() {
+        numberOfSessions = 0;
+        numberOfBars = 0;
+        numberOfCategories = 0;
+
+        successDataTrends = new LinkedHashMap<String, ArrayList<Pair<Float, Date>>>();
+        responseDataTrends = new LinkedHashMap<String, ArrayList<Pair<Float, Date>>>();
+        sucDivRespDataTrends = new LinkedHashMap<String, ArrayList<Pair<Float, Date>>>();
+
+        trendSorted = new HashMap<HashMap<String, ArrayList<Pair<Float, Date>>>, Boolean>();
+        series = new BarGraphSeries<DataPoint>();
     }
 }

@@ -10,10 +10,17 @@ import com.alztest.alztest.OptionListActivity;
 import com.alztest.alztest.Session.AlzTestSingleClickStats;
 import com.alztest.alztest.Session.StimulusSelection;
 import com.alztest.alztest.Stimuli.Stimulus;
+import com.alztest.alztest.Toolbox.AlzTestDatabaseManager;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.PreparedQuery;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import jxl.Workbook;
 import jxl.write.Label;
@@ -92,7 +99,25 @@ public class AlzTestStatisticsBrain {
     }
 
 
+    public static ArrayList<AlzTestSessionStatistics> getAllStatsById(long subjectId) {
+        //get dao
+        Dao<AlzTestSessionStatistics, Date> dao = AlzTestDatabaseManager.getInstance().getHelper().getAlzTestSessionStatisticsDao();
+        ArrayList<AlzTestSessionStatistics> stats = new ArrayList<AlzTestSessionStatistics>();
 
+        try {
+            //build query
+            QueryBuilder<AlzTestSessionStatistics, Date> qb = dao.queryBuilder();
+            Where where = qb.where();
+            where.eq("subjectId", subjectId);
 
+            //search
+            PreparedQuery<AlzTestSessionStatistics> preparedQuery = qb.prepare();
+            stats = (ArrayList<AlzTestSessionStatistics>) dao.query(preparedQuery);
+        } catch (SQLException e) {
+            Log.e(OptionListActivity.APPTAG, "Database SQL error");
+            e.printStackTrace();
+        }
 
+        return stats;
+    }
 }

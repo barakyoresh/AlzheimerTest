@@ -48,6 +48,8 @@
     <string name="IAmSure">I am sure</string>
     <string name="action_delete">delete stimulus</string>
     <string name="Close">Close</string>
+    <string name="ValueDifferenceTooltip">The \"value difference\" parameter refers to the difference in the distance score between a given pair of stimuli. The maximum and minimum limit the range of of possible pairings such that no two stimuli whose difference is below the \"minimum value difference\" or above the \"maximum value difference\" will be compared.</string>
+    <string name="SpecificStimuliTooltip">\"Choose Specific Stimuli\" option allows to include only selected stimuli out of of the stimuli list in the current testing. This choice is disabled unless marking \"Use Specific Stimuli Subset\"</string>
 
 
 </resources>
