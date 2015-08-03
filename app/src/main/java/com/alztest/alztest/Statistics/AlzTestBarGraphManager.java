@@ -190,13 +190,13 @@ public class AlzTestBarGraphManager {
         //size
         gv.getViewport().setXAxisBoundsManual(true);
         gv.getViewport().setMinX(0);
-        gv.getViewport().setMaxX(numberOfBars + 1 + trend.size());
+        gv.getViewport().setMaxX(numberOfBars + trend.size());
 
 
         //labels
         GridLabelRenderer labelRenderer = gv.getGridLabelRenderer();
         labelRenderer.setGridStyle(GridLabelRenderer.GridStyle.NONE);
-        labelRenderer.setNumHorizontalLabels(numberOfBars + 2 + trend.size());
+        labelRenderer.setNumHorizontalLabels(numberOfBars);
         labelRenderer.setVerticalLabelsVisible(false);
         StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(gv);
         staticLabelsFormatter.setHorizontalLabels(labels);
@@ -222,9 +222,8 @@ public class AlzTestBarGraphManager {
 
         //date labels
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM");
-        labels = new String[numberOfBars + 2 + trend.size()];
+        labels = new String[numberOfBars + 1 + trend.size()]; //+1 for zero, empty label
         labels[0] = "";
-        labels[1] = "";
 
         DataPoint dp[] = new DataPoint[numberOfBars + trend.size()];
 
